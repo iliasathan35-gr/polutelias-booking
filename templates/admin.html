@@ -1,3 +1,15 @@
+<h3>🕒 Διαθέσιμες Ώρες Σήμερα</h3>
+
+<div style="display:flex;flex-wrap:wrap;gap:10px;">
+{% for s in slots %}
+    <div style="background:#333;padding:10px;border-radius:8px;">
+        {{ s }}
+    </div>
+{% endfor %}
+</div>
+
+<hr>
+
 <!DOCTYPE html>
 <html>
 <head>
