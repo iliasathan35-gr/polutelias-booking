@@ -5,98 +5,104 @@
 
 <style>
 body {
-    margin: 0;
+    font-family: Arial;
     background: #111;
     color: white;
-    font-family: Arial;
-}
-
-.container {
-    padding: 15px;
+    padding: 10px;
 }
 
 h2 {
     text-align: center;
 }
 
-/* DATE PICKER */
-input[type="date"] {
-    width: 100%;
-    padding: 15px;
-    font-size: 18px;
-    margin-bottom: 15px;
-}
-
-/* CARD STYLE */
 .card {
     background: #222;
     padding: 15px;
+    margin: 15px 0;
     border-radius: 12px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 5px 0;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #00c853;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+}
+
+.delete {
+    display: inline-block;
+    margin-top: 10px;
+    color: red;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.logout {
+    text-align: center;
     margin-bottom: 10px;
 }
 
-.card p {
-    margin: 5px 0;
-    font-size: 18px;
-}
-
-/* DELETE BUTTON */
-.delete {
-    background: red;
-    padding: 10px;
-    text-align: center;
-    border-radius: 8px;
-    color: white;
-    text-decoration: none;
-    display: block;
-    margin-top: 10px;
+.logout a {
+    color: #ff5252;
 }
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<h2>💈 Admin Panel</h2>
 
-<h2>📅 Ραντεβού</h2>
-
-<a href="/logout" style="color:red;">Logout</a>
-
-<input type="date" id="filterDate">
-
-<div id="appointments">
-
-{% for a in data %}
-<div class="card" data-date="{{ a.time.split(' ')[0] }}">
-    <p><b>{{ a.name }}</b></p>
-    <p>{{ a.phone }}</p>
-    <p>{{ a.service }}</p>
-    <p>{{ a.time }}</p>
-
-    <a class="delete" href="/cancel/{{ loop.index0 }}">❌ Διαγραφή</a>
+<div class="logout">
+    <a href="/logout">🚪 Logout</a>
 </div>
+
+{% for d in data %}
+
+<div class="card">
+
+<form method="POST" action="/admin/edit/{{ loop.index0 }}">
+
+<label>Όνομα</label>
+<input name="name" value="{{ d.name }}" required>
+
+<label>Τηλέφωνο</label>
+<input name="phone" value="{{ d.phone }}" required>
+
+<label>Υπηρεσία</label>
+<select name="service">
+<option {% if d.service == "Κούρεμα" %}selected{% endif %}>Κούρεμα</option>
+<option {% if d.service == "Μούσι" %}selected{% endif %}>Μούσι</option>
+<option {% if d.service == "Κούρεμα + Μούσι" %}selected{% endif %}>Κούρεμα + Μούσι</option>
+</select>
+
+<label>Ημερομηνία</label>
+<input type="date" name="date" required>
+
+<label>Ώρα</label>
+<input type="time" name="time" required>
+
+<button type="submit">💾 Save αλλαγές</button>
+
+</form>
+
+<a class="delete" href="/cancel/{{ loop.index0 }}">🗑 Delete</a>
+
+</div>
+
 {% endfor %}
-
-</div>
-
-</div>
-
-<script>
-const dateInput = document.getElementById("filterDate");
-const cards = document.querySelectorAll(".card");
-
-dateInput.addEventListener("change", () => {
-    const selected = dateInput.value;
-
-    cards.forEach(card => {
-        if (card.getAttribute("data-date") === selected || selected === "") {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
-        }
-    });
-});
-</script>
 
 </body>
 </html>
