@@ -13,8 +13,8 @@ SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
 ADMIN_PASSWORD = "1234"
 
 # ---------------- TELEGRAM ----------------
-TELEGRAM_TOKEN = "ΒΑΛΕ_ΝΕΟ_TOKEN_ΕΔΩ"
-CHAT_ID = "ΒΑΛΕ_CHAT_ID_ΕΔΩ"
+TELEGRAM_TOKEN = "8780779879:AAHKpT6H0aLiWQV85-08NvWh3l_xBEyHfLA"
+CHAT_ID = "8780021902"
 
 def send_telegram(msg):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
