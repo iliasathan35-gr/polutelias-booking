@@ -9,7 +9,7 @@ app.secret_key = "CHANGE_THIS_SECRET"
 # =====================
 # ΡΥΘΜΙΣΕΙΣ (ΑΛΛΑΖΕΙΣ ΕΔΩ)
 # =====================
-ADMIN_PASSWORD = "1234"
+ADMIN_PASSWORD = "ilias123579"
 FILE = "data.json"
 
 WORK_HOURS = {
