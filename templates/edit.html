@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+}
+
+input, select {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    font-size: 18px;
+    border-radius: 10px;
+    border: none;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background: #00c853;
+    border: none;
+    color: white;
+    font-size: 18px;
+    border-radius: 10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>✏️ Edit Ραντεβού</h2>
+
+<form method="POST">
+
+<input name="name" value="{{ item.name }}" required>
+<input name="phone" value="{{ item.phone }}" required>
+
+<select name="service">
+<option {% if item.service == "Κούρεμα" %}selected{% endif %}>Κούρεμα</option>
+<option {% if item.service == "Μούσι" %}selected{% endif %}>Μούσι</option>
+<option {% if item.service == "Κούρεμα + Μούσι" %}selected{% endif %}>Κούρεμα + Μούσι</option>
+</select>
+
+<input type="date" name="date" required>
+<input type="time" name="time" required>
+
+<button>💾 Αποθήκευση</button>
+
+</form>
+
+</body>
+</html>
