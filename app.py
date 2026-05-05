@@ -60,51 +60,52 @@ def generate_slots(day):
 def index():
     data = load()
 
-    if request.method == "POST":
-        name = request.form["name"]
-        phone = request.form["phone"]
-        service = request.form["service"]
-        date = request.form["date"]
-        time = request.form["time"]
+   if request.method == "POST":
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    service = request.form.get("service")
+    date = request.form.get("date")
+    time = request.form.get("time")
 
+    # 🔴 safety check
+    if not name or not phone or not date or not time:
+        return "❌ Συμπλήρωσε όλα τα πεδία"
+
+    try:
         dt = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M")
-        now = datetime.now()
+    except:
+        return "❌ Λάθος ημερομηνία ή ώρα"
 
-        # 15 min rule
-        if dt - now < timedelta(minutes=15):
-            return "Δεν επιτρέπεται κράτηση <15 λεπτά πριν 💈"
+    now = datetime.now()
 
-        # overlap check
-        for d in data:
-            existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
-            if abs((existing - dt).total_seconds()) < 2700:
-                return "Ώρα κατειλημμένη 💈"
+    # 15 min rule
+    if dt - now < timedelta(minutes=15):
+        return "Δεν επιτρέπεται κράτηση <15 λεπτά πριν 💈"
 
-        data.append({
-            "name": name,
-            "phone": phone,
-            "service": service,
-            "time": date + " " + time
-        })
+    # overlap check
+    for d in data:
+        existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
+        if abs((existing - dt).total_seconds()) < 2700:
+            return "Ώρα κατειλημμένη 💈"
 
-        save(data)
+    data.append({
+        "name": name,
+        "phone": phone,
+        "service": service,
+        "time": date + " " + time
+    })
 
-        # 🔔 TELEGRAM
-        send_telegram(
-            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
-            f"Όνομα: {name}\n"
-            f"Τηλ: {phone}\n"
-            f"Υπηρεσία: {service}\n"
-            f"Ώρα: {date} {time}"
-        )
+    save(data)
 
-        return redirect("/success")
-
-    return render_template(
-        "index.html",
-        services=SERVICES,
-        slots=generate_slots(datetime.now().weekday())
+    send_telegram(
+        f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
+        f"Όνομα: {name}\n"
+        f"Τηλ: {phone}\n"
+        f"Υπηρεσία: {service}\n"
+        f"Ώρα: {date} {time}"
     )
+
+    return redirect("/success")
 
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["GET", "POST"])
