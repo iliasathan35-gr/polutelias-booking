@@ -23,7 +23,7 @@ def save(data):
         json.dump(data, f, indent=4)
 
 # --------------------
-# SLOTS (11:00 - 20:00)
+# SLOTS (11:00 - 20:00, 45min)
 # --------------------
 def generate_slots():
     slots = []
@@ -49,14 +49,19 @@ def index():
     if request.method == "POST":
         name = request.form["name"]
         phone = request.form["phone"]
-        time = request.form["time"]
         service = request.form["service"]
 
-        new_start = datetime.strptime(time, "%Y-%m-%dT%H:%M")
+        date = request.form["date"]
+        time = request.form["time"]
+
+        datetime_str = date + " " + time
+
+        new_start = datetime.strptime(datetime_str, "%Y-%m-%d %H:%M")
         new_end = new_start + timedelta(minutes=45)
 
+        # overlap check
         for d in data:
-            existing_start = datetime.strptime(d["time"], "%Y-%m-%dT%H:%M")
+            existing_start = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
             existing_end = existing_start + timedelta(minutes=45)
 
             if new_start < existing_end and new_end > existing_start:
@@ -65,8 +70,8 @@ def index():
         data.append({
             "name": name,
             "phone": phone,
-            "time": time,
-            "service": service
+            "service": service,
+            "time": datetime_str
         })
 
         save(data)
@@ -85,27 +90,6 @@ def index():
 def admin():
     data = load()
     return render_template("admin.html", data=data)
-
-# --------------------
-# CANCEL (1 hour rule)
-# --------------------
-@app.route("/cancel/<int:index>")
-def cancel(index):
-    data = load()
-
-    if index < 0 or index >= len(data):
-        return "Λάθος ραντεβού"
-
-    appointment_time = datetime.strptime(data[index]["time"], "%Y-%m-%dT%H:%M")
-    now = datetime.now()
-
-    if appointment_time - now < timedelta(hours=1):
-        return "Δεν μπορεί να ακυρωθεί (λιγότερο από 1 ώρα πριν) ❌"
-
-    data.pop(index)
-    save(data)
-
-    return redirect("/admin")
 
 # --------------------
 # SUCCESS
