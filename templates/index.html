@@ -11,17 +11,6 @@ body {
     padding: 10px;
 }
 
-h2 {
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-p {
-    text-align: center;
-    opacity: 0.6;
-    margin-top: 0;
-}
-
 .card {
     max-width: 420px;
     margin: auto;
@@ -38,56 +27,33 @@ input, select {
     border: none;
     background: #2a2a2a;
     color: white;
-    font-size: 15px;
-}
-
-input:focus, select:focus {
-    outline: 2px solid #00c853;
 }
 
 button.submit {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #00c853, #00e676);
+    background: #00c853;
     border: none;
     color: white;
-    font-size: 16px;
     border-radius: 12px;
-    margin-top: 10px;
-    font-weight: bold;
-    cursor: pointer;
 }
 
 .slots {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin: 10px 0;
 }
 
 .slot-btn {
-    padding: 10px 12px;
+    padding: 10px;
     border-radius: 20px;
     border: 1px solid #444;
     background: transparent;
     color: white;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.slot-btn:hover {
-    background: #00c853;
-    border-color: #00c853;
 }
 
 .slot-btn.selected {
     background: #00c853;
-    border-color: #00c853;
-}
-
-label {
-    font-size: 14px;
-    opacity: 0.8;
 }
 </style>
 </head>
@@ -96,8 +62,7 @@ label {
 
 <div class="card">
 
-<h2>💈 Book Appointment</h2>
-<p>Fast • Simple • Instant booking</p>
+<h2>💈 Κλείσε Ραντεβού</h2>
 
 <form method="POST">
 
@@ -105,30 +70,25 @@ label {
 <input name="phone" placeholder="Τηλέφωνο" required>
 
 <select name="service" required>
-    <option value="">Επιλογή υπηρεσίας</option>
-    {% for s in services %}
-        <option value="{{ s }}">{{ s }}</option>
-    {% endfor %}
+<option value="">Υπηρεσία</option>
+{% for s in services %}
+<option>{{ s }}</option>
+{% endfor %}
 </select>
 
-<!-- 📅 DATE -->
-<label>📅 Ημερομηνία</label>
-<input type="date" name="date" required>
+<input type="date" name="date" id="dateInput" required>
 
-<!-- 🕒 SLOTS -->
-<label>🕒 Ώρα</label>
-
-<div class="slots">
+<div class="slots" id="slotsContainer">
 {% for s in slots %}
-    <button type="button" class="slot-btn" onclick="selectTime('{{ s }}', this)">
-        {{ s }}
-    </button>
+<button type="button" class="slot-btn" onclick="selectTime('{{ s }}', this)">
+{{ s }}
+</button>
 {% endfor %}
 </div>
 
 <input type="hidden" name="time" id="timeInput">
 
-<button type="submit" class="submit">💈 Κλείσε ραντεβού</button>
+<button type="submit" class="submit">Κλείσε</button>
 
 </form>
 
@@ -137,13 +97,34 @@ label {
 <script>
 function selectTime(time, el){
     document.getElementById("timeInput").value = time;
-
-    document.querySelectorAll(".slot-btn").forEach(b => {
-        b.classList.remove("selected");
-    });
-
+    document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("selected"));
     el.classList.add("selected");
 }
+
+// 🔥 dynamic slots ανά ημερομηνία
+document.getElementById("dateInput").addEventListener("change", function(){
+    let date = this.value;
+
+    fetch("/slots?date=" + date)
+    .then(res => res.json())
+    .then(data => {
+        let container = document.getElementById("slotsContainer");
+        container.innerHTML = "";
+
+        data.forEach(s => {
+            let btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "slot-btn";
+            btn.innerText = s;
+
+            btn.onclick = function(){
+                selectTime(s, btn);
+            };
+
+            container.appendChild(btn);
+        });
+    });
+});
 </script>
 
 </body>
