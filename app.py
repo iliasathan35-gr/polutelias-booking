@@ -17,10 +17,13 @@ TELEGRAM_TOKEN = "8780779879:AAHKpT6H0aLiWQV85-08NvWh3l_xBEyHfLA"
 CHAT_ID = "8780021902"
 
 def send_telegram(msg):
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+    except Exception as e:
+        print("Telegram error:", e)
 
-# ---------------- LOAD / SAVE ----------------
+# ---------------- DATA ----------------
 def load():
     try:
         with open(FILE) as f:
@@ -67,6 +70,7 @@ def index():
         dt = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M")
         now = datetime.now()
 
+        # 15 min rule
         if dt - now < timedelta(minutes=15):
             return "Δεν επιτρέπεται κράτηση <15 λεπτά πριν 💈"
 
@@ -85,7 +89,7 @@ def index():
 
         save(data)
 
-        # 🔔 TELEGRAM NOTIFICATION
+        # 🔔 TELEGRAM
         send_telegram(
             f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
             f"Όνομα: {name}\n"
