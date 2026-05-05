@@ -1,41 +1,23 @@
-<h2>📅 Admin Dashboard</h2>
+<h2>Admin Dashboard 💈</h2>
 
 <a href="/logout">Logout</a>
 
-<hr>
+<table border="1">
+    <tr>
+        <th>Όνομα</th>
+        <th>Τηλέφωνο</th>
+        <th>Υπηρεσία</th>
+        <th>Ώρα</th>
+        <th>Delete</th>
+    </tr>
 
-{% set days = {} %}
-
-{% for a in data %}
-    {% set day = a.time.split(' ')[0] %}
-    {% if day not in days %}
-        {% set _ = days.update({day: []}) %}
-    {% endif %}
-    {% set _ = days[day].append(a) %}
-{% endfor %}
-
-{% for day, appointments in days.items() %}
-    <h3>📆 {{ day }}</h3>
-
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>Όνομα</th>
-            <th>Τηλέφωνο</th>
-            <th>Υπηρεσία</th>
-            <th>Ώρα</th>
-            <th>Ενέργεια</th>
-        </tr>
-
-        {% for a in appointments %}
-        <tr>
-            <td>{{ a.name }}</td>
-            <td>{{ a.phone }}</td>
-            <td>{{ a.service }}</td>
-            <td>{{ a.time.split(' ')[1] }}</td>
-            <td><a href="/cancel/{{ loop.index0 }}">❌</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <br>
-{% endfor %}
+    {% for a in data %}
+    <tr>
+        <td>{{ a.name }}</td>
+        <td>{{ a.phone }}</td>
+        <td>{{ a.service }}</td>
+        <td>{{ a.time }}</td>
+        <td><a href="/cancel/{{ loop.index0 }}">❌</a></td>
+    </tr>
+    {% endfor %}
+</table>
