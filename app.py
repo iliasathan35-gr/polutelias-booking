@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 import json
 from datetime import datetime, timedelta
+
 app = Flask(__name__)
 FILE = "data.json"
 
@@ -35,6 +36,17 @@ def index():
             if d["time"] == time:
                 return "Η ώρα είναι κατειλημμένη!"
 
+        new_start = datetime.strptime(time, "%Y-%m-%dT%H:%M")
+new_end = new_start + timedelta(minutes=45)
+
+for d in data:
+    existing_start = datetime.strptime(d["time"], "%Y-%m-%dT%H:%M")
+    existing_end = existing_start + timedelta(minutes=45)
+
+    # αν υπάρχει overlap
+    if new_start < existing_end and new_end > existing_start:
+        return "Υπάρχει ήδη ραντεβού σε αυτό το χρονικό διάστημα 💈"
+       
         data.append({
             "name": name,
             "phone": phone,
