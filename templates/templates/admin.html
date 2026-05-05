@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin</title>
+</head>
+<body>
+
+<h1>Ραντεβού</h1>
+
+{% for a in data %}
+<p>
+{{ a.name }} - {{ a.service }} - {{ a.time }}
+</p>
+{% endfor %}
+
+</body>
+</html>
