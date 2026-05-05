@@ -8,6 +8,23 @@ FILE = "data.json"
 
 SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
 
+# --------------------
+# LOAD / SAVE
+# --------------------
+def load():
+    try:
+        with open(FILE) as f:
+            return json.load(f)
+    except:
+        return []
+
+def save(data):
+    with open(FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
+# --------------------
+# TIME SLOTS (11:00 - 20:00)
+# --------------------
 def generate_slots():
     slots = []
     start_hour = 11
@@ -22,17 +39,9 @@ def generate_slots():
 
     return slots
 
-def load():
-    try:
-        with open(FILE) as f:
-            return json.load(f)
-    except:
-        return []
-
-def save(data):
-    with open(FILE, "w") as f:
-        json.dump(data, f, indent=4)
-
+# --------------------
+# HOME (BOOKING)
+# --------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
     data = load()
@@ -46,6 +55,7 @@ def index():
         new_start = datetime.strptime(time, "%Y-%m-%dT%H:%M")
         new_end = new_start + timedelta(minutes=45)
 
+        # overlap check
         for d in data:
             existing_start = datetime.strptime(d["time"], "%Y-%m-%dT%H:%M")
             existing_end = existing_start + timedelta(minutes=45)
@@ -63,17 +73,30 @@ def index():
         save(data)
         return redirect("/success")
 
-    return render_template("index.html", services=SERVICES)
+    return render_template(
+        "index.html",
+        services=SERVICES,
+        slots=generate_slots()
+    )
 
+# --------------------
+# ADMIN
+# --------------------
 @app.route("/admin")
 def admin():
     data = load()
     return render_template("admin.html", data=data)
 
+# --------------------
+# SUCCESS PAGE
+# --------------------
 @app.route("/success")
 def success():
-    return "Το ραντεβού κλείστηκε!"
+    return "Το ραντεβού κλείστηκε! 💈"
 
+# --------------------
+# RUN (Render compatible)
+# --------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
