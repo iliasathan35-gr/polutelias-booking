@@ -1,22 +1,90 @@
-<h2>Book Appointment 💈</h2>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #111;
+    color: white;
+}
+
+/* FULL SCREEN APP STYLE */
+.container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+}
+
+h2 {
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* INPUTS FULL WIDTH + BIG */
+input, select {
+    width: 100%;
+    font-size: 22px;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+}
+
+/* BIG BUTTON */
+button {
+    width: 100%;
+    font-size: 24px;
+    padding: 18px;
+    margin-top: 10px;
+    background: #00c853;
+    color: white;
+    border: none;
+    border-radius: 12px;
+}
+
+/* REMOVE SMALL FEEL */
+option {
+    font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>💈 Κράτηση</h2>
 
 <form method="POST">
-    <input name="name" placeholder="Όνομα">
-    <input name="phone" placeholder="Τηλέφωνο">
 
-    <select name="service">
-        {% for s in services %}
-        <option>{{ s }}</option>
-        {% endfor %}
-    </select>
+<input name="name" placeholder="ΟΝΟΜΑ">
+<input name="phone" placeholder="ΤΗΛΕΦΩΝΟ">
 
-    <input type="date" name="date">
+<select name="service">
+{% for s in services %}
+<option>{{ s }}</option>
+{% endfor %}
+</select>
 
-    <select name="time">
-        {% for s in slots %}
-        <option>{{ s }}</option>
-        {% endfor %}
-    </select>
+<input type="date" name="date">
 
-    <button>Κράτηση</button>
+<select name="time">
+{% for t in slots %}
+<option>{{ t }}</option>
+{% endfor %}
+</select>
+
+<button>ΚΛΕΙΣΕ ΡΑΝΤΕΒΟΥ</button>
+
 </form>
+
+</div>
+
+</body>
+</html>
