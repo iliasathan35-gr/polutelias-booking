@@ -38,15 +38,20 @@ def send_telegram(text):
 
 # ---------- SLOTS ----------
 def generate_slots(day):
-    return [
-        "10:00", "10:30",
-        "11:00", "11:30",
-        "12:00", "12:30",
-        "13:00", "13:30",
-        "17:00", "17:30",
-        "18:00", "18:30",
-        "19:00"
-    ]
+    slots = []
+    
+    start_hour = 10
+    end_hour = 20
+
+    current = datetime(2000, 1, 1, start_hour, 0)
+
+    end = datetime(2000, 1, 1, end_hour, 0)
+
+    while current <= end:
+        slots.append(current.strftime("%H:%M"))
+        current += timedelta(minutes=45)
+
+    return slots
 
 
 SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
