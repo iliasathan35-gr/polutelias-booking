@@ -48,7 +48,7 @@ def generate_slots(day):
     return slots
 
 # --------------------
-# HOME
+# HOME (BOOKING)
 # --------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -64,24 +64,27 @@ def index():
         dt = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M")
         now = datetime.now()
 
+        # 15 λεπτά πριν
         if dt - now < timedelta(minutes=15):
             return "Δεν επιτρέπεται κράτηση <15 λεπτά πριν 💈"
 
         day = dt.weekday()
 
         if day == 6:
-            return "Κυριακή κλειστά"
+            return "Κυριακή κλειστά 💈"
 
         if day == 5 and (dt.hour < 10 or dt.hour >= 14):
-            return "Σάββατο 10-14"
+            return "Σάββατο 10:00 - 14:00"
 
         if day <= 4 and (dt.hour < 11 or dt.hour >= 20):
-            return "11-20"
+            return "Ωράριο 11:00 - 20:00"
 
+        # overlap check
         for d in data:
             existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
+
             if abs((existing - dt).total_seconds()) < 2700:
-                return "Ήδη κλεισμένο"
+                return "Υπάρχει ήδη ραντεβού 💈"
 
         data.append({
             "name": name,
@@ -131,6 +134,7 @@ def cancel(index):
         return redirect("/login")
 
     data = load()
+
     if 0 <= index < len(data):
         data.pop(index)
         save(data)
@@ -150,7 +154,7 @@ def logout():
 # --------------------
 @app.route("/success")
 def success():
-    return "✅ Επιτυχία! Το ραντεβού σου καταχωρήθηκε."
+    return render_template("success.html")
 
 # --------------------
 # RUN
