@@ -1,23 +1,23 @@
-<h2>Admin Dashboard 💈</h2>
+<h2>Admin 💈</h2>
 
 <a href="/logout">Logout</a>
 
 <table border="1">
-    <tr>
-        <th>Όνομα</th>
-        <th>Τηλέφωνο</th>
-        <th>Υπηρεσία</th>
-        <th>Ώρα</th>
-        <th>Delete</th>
-    </tr>
+<tr>
+<th>Όνομα</th>
+<th>Τηλέφωνο</th>
+<th>Υπηρεσία</th>
+<th>Ώρα</th>
+<th>❌</th>
+</tr>
 
-    {% for a in data %}
-    <tr>
-        <td>{{ a.name }}</td>
-        <td>{{ a.phone }}</td>
-        <td>{{ a.service }}</td>
-        <td>{{ a.time }}</td>
-        <td><a href="/cancel/{{ loop.index0 }}">❌</a></td>
-    </tr>
-    {% endfor %}
+{% for a in data %}
+<tr>
+<td>{{ a.name }}</td>
+<td>{{ a.phone }}</td>
+<td>{{ a.service }}</td>
+<td>{{ a.time }}</td>
+<td><a href="/cancel/{{ loop.index0 }}">X</a></td>
+</tr>
+{% endfor %}
 </table>
