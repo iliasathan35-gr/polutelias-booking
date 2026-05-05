@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-app.secret_key = "change_this_secret"
+app.secret_key = "change_this_secret_key"
 
 FILE = "data.json"
 
@@ -26,18 +26,21 @@ def save(data):
         json.dump(data, f, indent=4)
 
 # --------------------
-# SLOTS
+# SLOTS (RULES)
 # --------------------
 def generate_slots(day):
     slots = []
 
-    if day == 6:  # Κυριακή
+    # Κυριακή κλειστά
+    if day == 6:
         return []
 
-    if day == 5:  # Σάββατο
+    # Σάββατο 10:00 - 14:00
+    if day == 5:
         start_hour = 10
         end_hour = 14
-    else:  # Δευτέρα - Παρασκευή
+    else:
+        # Δευτέρα - Παρασκευή 11:00 - 20:00
         start_hour = 11
         end_hour = 20
 
@@ -51,19 +54,7 @@ def generate_slots(day):
     return slots
 
 # --------------------
-# FREE SLOTS (hide booked)
-# --------------------
-def get_free_slots(data, day):
-    all_slots = generate_slots(day)
-
-    booked = set()
-    for d in data:
-        booked.add(d["time"].split(" ")[1])
-
-    return [s for s in all_slots if s not in booked]
-
-# --------------------
-# HOME
+# HOME (BOOKING)
 # --------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -73,6 +64,7 @@ def index():
         name = request.form["name"]
         phone = request.form["phone"]
         service = request.form["service"]
+
         date = request.form["date"]
         time = request.form["time"]
 
@@ -80,25 +72,33 @@ def index():
 
         now = datetime.now()
 
-        # 15 min rule
+        # ❗ 15 λεπτά πριν rule
         if dt - now < timedelta(minutes=15):
             return "Δεν επιτρέπεται κράτηση λιγότερο από 15 λεπτά πριν 💈"
 
         day = dt.weekday()
 
+        # ❌ Κυριακή
         if day == 6:
             return "Κυριακή δεν λειτουργεί 💈"
 
+        # ❌ Σάββατο εκτός ωραρίου
         if day == 5 and (dt.hour < 10 or dt.hour >= 14):
             return "Σάββατο μόνο 10:00 - 14:00"
 
+        # ❌ Δευτέρα - Παρασκευή εκτός ωραρίου
         if day <= 4 and (dt.hour < 11 or dt.hour >= 20):
             return "Ωράριο 11:00 - 20:00"
 
+        new_start = dt
+        new_end = dt + timedelta(minutes=45)
+
         # overlap check
         for d in data:
-            existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
-            if abs((existing - dt).total_seconds()) < 2700:  # 45min
+            existing_start = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
+            existing_end = existing_start + timedelta(minutes=45)
+
+            if new_start < existing_end and new_end > existing_start:
                 return "Υπάρχει ήδη ραντεβού 💈"
 
         data.append({
@@ -114,11 +114,11 @@ def index():
     return render_template(
         "index.html",
         services=SERVICES,
-        slots=get_free_slots(load(), datetime.now().weekday())
+        slots=generate_slots(datetime.now().weekday())
     )
 
 # --------------------
-# LOGIN
+# LOGIN (ADMIN)
 # --------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -142,7 +142,7 @@ def admin():
     return render_template("admin.html", data=data)
 
 # --------------------
-# CANCEL
+# CANCEL APPOINTMENT
 # --------------------
 @app.route("/cancel/<int:index>")
 def cancel(index):
@@ -166,14 +166,14 @@ def logout():
     return redirect("/login")
 
 # --------------------
-# SUCCESS
+# SUCCESS PAGE
 # --------------------
 @app.route("/success")
 def success():
     return "Το ραντεβού κλείστηκε! 💈"
 
 # --------------------
-# RUN
+# RUN SERVER
 # --------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
