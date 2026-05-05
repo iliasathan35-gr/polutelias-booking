@@ -1,12 +1,16 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 import json
 import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
+app.secret_key = "change_this_secret"
+
 FILE = "data.json"
 
 SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
+
+ADMIN_PASSWORD = "1234"
 
 # --------------------
 # LOAD / SAVE
@@ -23,21 +27,20 @@ def save(data):
         json.dump(data, f, indent=4)
 
 # --------------------
-# SLOTS BY DAY
+# SLOTS
 # --------------------
 def generate_slots(day):
     slots = []
 
-    # Κυριακή κλειστά
+    # Κυριακή
     if day == 6:
         return []
 
-    # Σάββατο 10-14
+    # Σάββατο
     if day == 5:
         start_hour = 10
         end_hour = 14
     else:
-        # Δευτέρα - Παρασκευή
         start_hour = 11
         end_hour = 20
 
@@ -67,10 +70,9 @@ def index():
 
         dt = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M")
 
-        # --------------------
-        # CUT-OFF 15 λεπτά πριν (σταθερό χωρίς timezone bugs)
-        # --------------------
         now = datetime.now()
+
+        # ❗ 15 λεπτά πριν rule
         if dt - now < timedelta(minutes=15):
             return "Δεν επιτρέπεται κράτηση λιγότερο από 15 λεπτά πριν 💈"
 
@@ -116,12 +118,36 @@ def index():
     )
 
 # --------------------
+# LOGIN
+# --------------------
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        if request.form["password"] == ADMIN_PASSWORD:
+            session["admin"] = True
+            return redirect("/admin")
+        return "Λάθος password"
+
+    return render_template("login.html")
+
+# --------------------
 # ADMIN
 # --------------------
 @app.route("/admin")
 def admin():
+    if not session.get("admin"):
+        return redirect("/login")
+
     data = load()
     return render_template("admin.html", data=data)
+
+# --------------------
+# LOGOUT
+# --------------------
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
 
 # --------------------
 # SUCCESS
