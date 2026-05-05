@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Barber Booking</title>
+</head>
+<body>
+
+<h1>Κλείσε Ραντεβού 💈</h1>
+
+<form method="POST">
+    <input name="name" placeholder="Όνομα" required><br><br>
+    <input name="phone" placeholder="Τηλέφωνο" required><br><br>
+
+    <select name="service">
+        {% for s in services %}
+        <option>{{ s }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <input type="datetime-local" name="time" required><br><br>
+
+    <button>Κλείσε</button>
+</form>
+
+</body>
+</html>
