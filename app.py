@@ -149,41 +149,38 @@ def logout():
 def success():
     return render_template("success.html")
 
-@app.route("/edit/<int:index>", methods=["GET", "POST"])
-def edit(index):
+@app.route("/admin/edit/<int:index>", methods=["POST"])
+def admin_edit(index):
     if not session.get("admin"):
         return redirect("/login")
 
     data = load()
 
-    if request.method == "POST":
-        name = request.form["name"]
-        phone = request.form["phone"]
-        service = request.form["service"]
-        date = request.form["date"]
-        time = request.form["time"]
+    name = request.form["name"]
+    phone = request.form["phone"]
+    service = request.form["service"]
+    date = request.form["date"]
+    time = request.form["time"]
 
-        dt = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M")
+    dt = datetime.strptime(date + " " + time, "%Y-%m-%d %H:%M")
 
-        for i, d in enumerate(data):
-            if i == index:
-                continue
+    for i, d in enumerate(data):
+        if i == index:
+            continue
 
-            existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
-            if abs((existing - dt).total_seconds()) < 2700:
-                return "Ώρα κατειλημμένη 💈"
+        existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
+        if abs((existing - dt).total_seconds()) < 2700:
+            return "Ώρα κατειλημμένη 💈"
 
-        data[index] = {
-            "name": name,
-            "phone": phone,
-            "service": service,
-            "time": date + " " + time
-        }
+    data[index] = {
+        "name": name,
+        "phone": phone,
+        "service": service,
+        "time": date + " " + time
+    }
 
-        save(data)
-        return redirect("/admin")
-
-    return render_template("edit.html", item=data[index], index=index)
+    save(data)
+    return redirect("/admin")
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
