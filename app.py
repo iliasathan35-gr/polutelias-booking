@@ -18,6 +18,8 @@ app.secret_key = "secret123"
 
 DATA_FILE = "data.json"
 
+SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
+
 
 # ---------------- DATA ----------------
 def load():
@@ -64,9 +66,6 @@ def generate_slots(day):
         start += timedelta(minutes=45)
 
     return slots
-
-
-SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
 
 
 # ---------------- HOME ----------------
@@ -178,8 +177,6 @@ def admin():
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
 
-        label = f"{days_gr[day.weekday()]} {day.day} {months_gr[day.month - 1]} {day.year}"
-
         slots = generate_slots(day.weekday())
 
         day_bookings = []
@@ -200,13 +197,33 @@ def admin():
 
         days.append({
             "date": date_str,
-            "label": label,
+            "label": f"{days_gr[day.weekday()]} {day.day} {months_gr[day.month - 1]} {day.year}",
             "slots": slots,
             "bookings": day_bookings,
             "booked_times": booked_times
         })
 
     return render_template("admin.html", days=days)
+
+
+# ---------------- ADMIN BOOK ----------------
+@app.route("/admin/book/<date>/<time>")
+def admin_book(date, time):
+    if not session.get("admin"):
+        return redirect("/login")
+
+    data = load()
+
+    data.append({
+        "name": "ADMIN",
+        "phone": "-",
+        "service": "Manual booking",
+        "time": f"{date} {time}",
+        "token": str(uuid.uuid4())
+    })
+
+    save(data)
+    return redirect("/admin")
 
 
 # ---------------- EDIT ----------------
@@ -242,6 +259,20 @@ def admin_delete(index):
 
     if 0 <= index < len(data):
         data.pop(index)
+
+    save(data)
+    return redirect("/admin")
+
+
+# ---------------- CANCEL WHOLE DAY ----------------
+@app.route("/admin/delete-day/<date>")
+def delete_day(date):
+    if not session.get("admin"):
+        return redirect("/login")
+
+    data = load()
+
+    data = [d for d in data if not d["time"].startswith(date)]
 
     save(data)
     return redirect("/admin")
