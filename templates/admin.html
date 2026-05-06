@@ -21,9 +21,8 @@
         .day {
             background: #1c1c1c;
             padding: 15px;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             border-radius: 12px;
-            cursor: pointer;
         }
 
         .day-title {
@@ -32,36 +31,41 @@
             margin-bottom: 10px;
         }
 
-        .slots, .bookings {
+        .slots {
             margin-top: 10px;
         }
 
         .slot {
             display: inline-block;
-            background: #333;
-            padding: 5px 10px;
-            margin: 3px;
+            margin: 4px;
+            padding: 6px 10px;
             border-radius: 6px;
             font-size: 14px;
         }
 
-        .booking {
-            background: #2a2a2a;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 8px;
+        .slot.free {
+            background: green;
+            color: white;
+        }
+
+        .slot.booked {
+            background: red;
+            color: white;
         }
 
         .btn {
-            padding: 5px 8px;
+            padding: 4px 8px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             margin-left: 5px;
+            text-decoration: none;
+            font-size: 12px;
         }
 
-        .edit {
-            background: #f0ad4e;
+        .book {
+            background: #5cb85c;
+            color: white;
         }
 
         .delete {
@@ -69,10 +73,13 @@
             color: white;
         }
 
-        .book {
-            background: #5cb85c;
-            color: white;
+        .booking {
+            background: #2a2a2a;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 8px;
         }
+
     </style>
 </head>
 
@@ -92,23 +99,35 @@
     <!-- ⏰ Slots -->
     <div class="slots">
         {% for slot in day.slots %}
-            <span class="slot">{{ slot }}</span>
+
+            {% if slot in day.booked_times %}
+                <span class="slot booked">🔴 {{ slot }}</span>
+            {% else %}
+                <span class="slot free">🟢 {{ slot }}</span>
+
+                <!-- admin booking -->
+                <a class="btn book" href="/admin/book/{{ day.date }}/{{ slot }}">+</a>
+            {% endif %}
+
         {% endfor %}
     </div>
 
     <!-- 📌 Bookings -->
     <div class="bookings">
-        {% for b in day.bookings %}
-            <div class="booking">
-                <b>{{ b.name }}</b> - {{ b.phone }} <br>
-                {{ b.service }} <br>
-                🕒 {{ b.time }}
 
-                <!-- buttons -->
-                <a class="btn edit" href="/admin/edit/{{ b.index }}">Edit</a>
-                <a class="btn delete" href="/admin/delete/{{ b.index }}">Delete</a>
-            </div>
+        {% for b in day.bookings %}
+        <div class="booking">
+            <b>{{ b.name }}</b> <br>
+            📞 {{ b.phone }} <br>
+            💈 {{ b.service }} <br>
+            🕒 {{ b.time }}
+
+            <br><br>
+
+            <a class="btn delete" href="/admin/delete/{{ b.index }}">Delete</a>
+        </div>
         {% endfor %}
+
     </div>
 
 </div>
