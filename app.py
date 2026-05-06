@@ -220,10 +220,11 @@ def admin():
                 })
 
         days.append({
-            "date": date_str,
-            "bookings": day_bookings,
-            "free_slots": free_slots
-        })
+    "date": date_str,
+    "label": label,
+    "slots": slots,
+    "bookings": day_bookings
+})
 
     return render_template("admin.html", days=days)
 
