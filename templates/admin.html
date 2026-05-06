@@ -59,18 +59,21 @@ button {
 
         <!-- ADMIN CAN CREATE BOOKING -->
         <form method="POST" action="/admin/add">
-            <input type="hidden" name="date" value="{{ day.date }}">
-            <input type="hidden" name="time" value="{{ s.time }}">
-            <input name="name" placeholder="Όνομα">
-            <input name="phone" placeholder="Τηλ">
-            <select name="service">
-              <option>Κούρεμα</option>
-              <option>Μούσι</option>
-              <option>Κούρεμα + Μούσι</option>
-            </select>
-            <button type="submit">➕ Book</button>
-        </form>
-      </div>
+      <input type="hidden" name="date" value="{{ day.date }}">
+      <input type="hidden" name="time" value="{{ s.time }}">
+
+      <input name="name" placeholder="Όνομα" required>
+      <input name="phone" placeholder="Τηλ" required>
+
+      <select name="service">
+        <option>Κούρεμα</option>
+        <option>Μούσι</option>
+        <option>Κούρεμα + Μούσι</option>
+      </select>
+
+      <button type="submit">➕ Κράτηση</button>
+  </form>
+</div>
     {% endfor %}
 
     <h4>📌 Booked</h4>
