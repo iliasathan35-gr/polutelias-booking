@@ -205,5 +205,58 @@ window.onload = function(){
 
 </script>
 
+<script>
+
+// LIVE UPDATES (κάθε 5 sec)
+setInterval(function(){
+
+    let date = document.getElementById("date").value;
+
+    if(date){
+
+        fetch("/slots?date=" + date)
+        .then(res => res.json())
+        .then(data => {
+
+            let container = document.getElementById("slots");
+
+            // κρατάμε το selected time
+            let selectedTime = document.getElementById("timeInput").value;
+
+            container.innerHTML = "";
+
+            if(data.length === 0){
+                container.innerHTML = "<p>❌ Δεν υπάρχουν διαθέσιμες ώρες</p>";
+                return;
+            }
+
+            data.forEach(time => {
+
+                let div = document.createElement("div");
+
+                div.className = "slot";
+
+                div.innerText = time;
+
+                // αν είναι ήδη selected → κράτα το highlight
+                if(time === selectedTime){
+                    div.classList.add("selected");
+                }
+
+                div.onclick = function(){
+                    selectTime(time, div);
+                };
+
+                container.appendChild(div);
+            });
+
+        });
+
+    }
+
+}, 5000);
+
+</script>
+    
 </body>
 </html>
