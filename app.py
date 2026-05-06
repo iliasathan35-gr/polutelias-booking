@@ -196,38 +196,31 @@ def admin():
 
     data = load()
 
-    days = []
     today = datetime.now()
+    days = []
 
     for i in range(7):
         day_date = today + timedelta(days=i)
-        weekday = day_date.weekday()
+        date_str = day_date.strftime("%Y-%m-%d")
 
-        slots = generate_slots(weekday)
-        day_slots = []
+        bookings = []
 
-        for s in slots:
-            full_time = f"{day_date.strftime('%Y-%m-%d')} {s}"
-
-            found = None
-            for idx, d in enumerate(data):
-                if d["time"] == full_time:
-                    found = d.copy()
-                    found["index"] = idx
-                    break
-
-            day_slots.append({
-                "time": s,
-                "booking": found
-            })
+        for idx, d in enumerate(data):
+            if d["time"].startswith(date_str):
+                bookings.append({
+                    "index": idx,
+                    "name": d["name"],
+                    "phone": d["phone"],
+                    "service": d["service"],
+                    "time": d["time"]
+                })
 
         days.append({
-            "date": day_date.strftime("%Y-%m-%d"),
-            "slots": day_slots
+            "date": date_str,
+            "bookings": bookings
         })
 
     return render_template("admin.html", days=days)
-
 
 # ---------------- ADD ----------------
 @app.route("/admin/add", methods=["POST"])
