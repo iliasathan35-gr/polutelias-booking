@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, session, jsonify
+from flask import Flask, render_template, request, redirect, session
 from datetime import datetime, timedelta
 import json
 import uuid
+import requests
 
 app = Flask(__name__)
 app.secret_key = "secret123"
@@ -26,8 +27,6 @@ def save(data):
 # ---------------- TELEGRAM ----------------
 def send_telegram(text):
     try:
-        import requests
-
         TOKEN = "8780779879:AAHKpT6H0aLiWQV85-08NvWh3l_xBEyHfLA"
         CHAT_ID = "8780021902"
 
@@ -80,9 +79,10 @@ def index():
         try:
             dt = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
         except:
-            return "❌ Λάθος ημερομηνία ή ώρα"
+            return "❌ Λάθος ημερομηνία/ώρα"
 
         now = datetime.now()
+
         if dt.weekday() == 6:
             return "❌ Κυριακή κλειστά"
 
@@ -116,8 +116,7 @@ def index():
 
         return redirect("/success")
 
-    today = datetime.now()
-    slots = generate_slots(today.weekday())
+    slots = generate_slots(datetime.now().weekday())
 
     booked = []
     for d in data:
@@ -132,30 +131,6 @@ def index():
     return render_template("index.html", services=SERVICES, slots=available)
 
 
-# ---------------- SLOTS API ----------------
-@app.route("/slots")
-def slots_api():
-    date = request.args.get("date")
-    data = load()
-
-    try:
-        dt = datetime.strptime(date, "%Y-%m-%d")
-    except:
-        return jsonify([])
-
-    if dt.weekday() == 6:
-        return jsonify([])
-
-    slots = generate_slots(dt.weekday())
-
-    booked = []
-    for d in data:
-        if d["time"].startswith(date):
-            booked.append(d["time"].split(" ")[1])
-
-    return jsonify([s for s in slots if s not in booked])
-
-
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -163,7 +138,7 @@ def login():
         if request.form.get("password") == "admin":
             session["admin"] = True
             return redirect("/admin")
-        return "❌ Λάθος"
+        return "❌ Λάθος password"
 
     return render_template("login.html")
 
@@ -181,9 +156,9 @@ def admin():
         return redirect("/login")
 
     data = load()
+    today = datetime.now()
 
     days = []
-    today = datetime.now()
 
     for i in range(10):
         day = today + timedelta(days=i)
@@ -209,7 +184,7 @@ def admin():
     return render_template("admin.html", days=days)
 
 
-# ---------------- ADD ----------------
+# ---------------- ADD (ADMIN) ----------------
 @app.route("/admin/add", methods=["POST"])
 def admin_add():
     if not session.get("admin"):
@@ -217,18 +192,33 @@ def admin_add():
 
     data = load()
 
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    service = request.form.get("service")
     date = request.form.get("date")
     time = request.form.get("time")
 
+    if not date or not time:
+        return "❌ Missing date/time"
+
+    full_time = f"{date} {time}"
+
+    for d in data:
+        if d["time"] == full_time:
+            return "❌ Ώρα κατειλημμένη"
+
     data.append({
-        "name": request.form.get("name"),
-        "phone": request.form.get("phone"),
-        "service": request.form.get("service"),
-        "time": f"{date} {time}",
+        "name": name,
+        "phone": phone,
+        "service": service,
+        "time": full_time,
         "token": str(uuid.uuid4())
     })
 
     save(data)
+
+    send_telegram(f"💈 ADMIN ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{full_time}")
+
     return redirect("/admin")
 
 
@@ -267,39 +257,6 @@ def admin_delete(index):
         data.pop(index)
 
     save(data)
-    return redirect("/admin")
-
-@app.route("/admin/add", methods=["POST"])
-def admin_add():
-    if not session.get("admin"):
-        return redirect("/login")
-
-    data = load()
-
-    name = request.form.get("name")
-    phone = request.form.get("phone")
-    service = request.form.get("service")
-    date = request.form.get("date")
-    time = request.form.get("time")
-
-    if not date or not time:
-        return "❌ Missing date/time"
-
-    full_time = f"{date} {time}"
-
-    for d in data:
-        if d["time"] == full_time:
-            return "❌ Ήδη κλεισμένο"
-
-    data.append({
-        "name": name,
-        "phone": phone,
-        "service": service,
-        "time": full_time
-    })
-
-    save(data)
-
     return redirect("/admin")
 
 
