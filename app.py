@@ -269,6 +269,39 @@ def admin_delete(index):
     save(data)
     return redirect("/admin")
 
+@app.route("/admin/add", methods=["POST"])
+def admin_add():
+    if not session.get("admin"):
+        return redirect("/login")
+
+    data = load()
+
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    service = request.form.get("service")
+    date = request.form.get("date")
+    time = request.form.get("time")
+
+    if not date or not time:
+        return "❌ Missing date/time"
+
+    full_time = f"{date} {time}"
+
+    for d in data:
+        if d["time"] == full_time:
+            return "❌ Ήδη κλεισμένο"
+
+    data.append({
+        "name": name,
+        "phone": phone,
+        "service": service,
+        "time": full_time
+    })
+
+    save(data)
+
+    return redirect("/admin")
+
 
 # ---------------- SUCCESS ----------------
 @app.route("/success")
