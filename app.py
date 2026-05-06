@@ -36,11 +36,19 @@ def send_telegram(text):
 SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
 
 # ---------------- SLOTS ----------------
-def generate_slots():
-    start = datetime(2000, 1, 1, 11, 0)
-    end = datetime(2000, 1, 1, 20, 0)
+def generate_slots(day):
+    if day == 6:
+        return []
 
     slots = []
+
+    if day == 5:
+        start = datetime(2000, 1, 1, 10, 0)
+        end = datetime(2000, 1, 1, 14, 0)
+    else:
+        start = datetime(2000, 1, 1, 11, 0)
+        end = datetime(2000, 1, 1, 20, 0)
+
     while start <= end:
         slots.append(start.strftime("%H:%M"))
         start += timedelta(minutes=45)
@@ -65,49 +73,35 @@ def index():
 
         dt = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
 
-        # basic checks
-        if dt.weekday() == 6:
-            return "❌ Κυριακή κλειστά"
-
-        if dt > today + timedelta(days=7):
-            return "❌ Μέχρι 7 μέρες"
-
-        if dt - today < timedelta(minutes=15):
-            return "❌ Πολύ κοντά"
-
         # conflict check
         for d in data:
             if d["time"] == f"{date} {time}":
                 return "❌ Ώρα κατειλημμένη"
 
-        new_booking = {
+        data.append({
             "name": name,
             "phone": phone,
             "service": service,
             "time": f"{date} {time}",
             "token": str(uuid.uuid4())
-        }
+        })
 
-        data.append(new_booking)
         save(data)
 
-        # 🔔 Telegram notification (WORKING PART YOU ALREADY USE)
+        # Telegram
         send_telegram(
-            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
-            f"Όνομα: {name}\n"
-            f"Τηλ: {phone}\n"
-            f"Υπηρεσία: {service}\n"
-            f"Ώρα: {date} {time}"
+            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ\n"
+            f"{name}\n{phone}\n{service}\n{date} {time}"
         )
 
         return redirect("/success")
 
     # GET
-    slots = generate_slots()
+    slots = generate_slots(today.weekday())
 
-    booked = []
     today_str = today.strftime("%Y-%m-%d")
 
+    booked = []
     for d in data:
         if d["time"].startswith(today_str):
             booked.append(d["time"].split(" ")[1])
@@ -126,22 +120,6 @@ def index():
         today=today_str
     )
 
-# ---------------- LOGIN ----------------
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        if request.form.get("password") == "admin":
-            session["admin"] = True
-            return redirect("/admin")
-        return "❌ Λάθος password"
-
-    return render_template("login.html")
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/login")
-
 # ---------------- ADMIN ----------------
 @app.route("/admin")
 def admin():
@@ -157,11 +135,11 @@ def admin():
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
 
-        day_bookings = []
+        bookings = []
 
         for idx, d in enumerate(data):
             if d["time"].startswith(date_str):
-                day_bookings.append({
+                bookings.append({
                     "index": idx,
                     "name": d["name"],
                     "phone": d["phone"],
@@ -171,7 +149,7 @@ def admin():
 
         days.append({
             "date": date_str,
-            "bookings": day_bookings
+            "bookings": bookings
         })
 
     return render_template("admin.html", days=days)
@@ -180,9 +158,6 @@ def admin():
 @app.route("/admin/edit/<int:index>", methods=["GET", "POST"])
 def edit(index):
     data = load()
-
-    if index < 0 or index >= len(data):
-        return redirect("/admin")
 
     if request.method == "POST":
         data[index]["name"] = request.form["name"]
@@ -206,11 +181,25 @@ def delete(index):
     save(data)
     return redirect("/admin")
 
-# ---------------- SUCCESS ----------------
+# ---------------- LOGIN ----------------
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        if request.form.get("password") == "admin":
+            session["admin"] = True
+            return redirect("/admin")
+        return "❌ Λάθος password"
+
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
+
 @app.route("/success")
 def success():
-    return "✔ ΡΑΝΤΕΒΟΥ ΚΑΤΑΧΩΡΗΘΗΚΕ"
+    return "✔ ΚΡΑΤΗΣΗ ΕΓΙΝΕ"
 
-# ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
