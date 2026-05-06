@@ -73,7 +73,7 @@ def index():
         date = request.form.get("date")
         time = request.form.get("time")
 
-        if not name or not phone or not date or not time:
+        if not name or not phone or not service or not date or not time:
             return "❌ Συμπλήρωσε όλα τα πεδία"
 
         try:
@@ -100,41 +100,49 @@ def index():
             except:
                 pass
 
+        # ✅ SAVE
         data.append({
             "name": name,
             "phone": phone,
             "service": service,
-            "time": f"{date} {time}",
-            "token": str(uuid.uuid4())
+            "time": f"{date} {time}"
         })
 
         save(data)
 
+        # 🔔 TELEGRAM NOTIFICATION
         send_telegram(
-            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{date} {time}"
+            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
+            f"Όνομα: {name}\n"
+            f"Τηλ: {phone}\n"
+            f"Υπηρεσία: {service}\n"
+            f"Ώρα: {date} {time}"
         )
 
         return redirect("/success")
 
-    slots = generate_slots(datetime.now().weekday())
+    # ---------------- GET ----------------
+
+    today_dt = datetime.now()
+
+    slots = generate_slots(today_dt.weekday())
 
     booked = []
+    today_str = today_dt.strftime("%Y-%m-%d")
+
     for d in data:
-        try:
-            dt = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
-            booked.append(dt.strftime("%H:%M"))
-        except:
-            pass
+        if d["time"].startswith(today_str):
+            booked.append(d["time"].split(" ")[1])
 
     available = [s for s in slots if s not in booked]
 
-   return render_template(
-    "index.html",
-    services=SERVICES,
-    slots=available,
-    today=datetime.now().strftime("%Y-%m-%d"),
-    max_date=(datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")
-)
+    return render_template(
+        "index.html",
+        services=SERVICES,
+        slots=available,
+        today=today_dt.strftime("%Y-%m-%d"),
+        max_date=(today_dt + timedelta(days=7)).strftime("%Y-%m-%d")
+    )
 
 
 # ---------------- LOGIN ----------------
