@@ -254,6 +254,7 @@ def admin_add():
 
 
 # ---------------- EDIT ----------------
+
 @app.route("/admin/edit/<int:index>", methods=["POST"])
 def admin_edit(index):
     if not session.get("admin"):
@@ -267,24 +268,24 @@ def admin_edit(index):
     date = request.form.get("date")
     time = request.form.get("time")
 
-    full_time = f"{date} {time}"
+    if not name or not phone or not date or not time:
+        return "❌ Λείπουν στοιχεία"
 
+    new_time = f"{date} {time}"
+
+    # overlap check (εκτός του ίδιου)
     for i, d in enumerate(data):
         if i == index:
             continue
-        if d["time"] == full_time:
-            return "❌ Ήδη κλεισμένο"
+        if d["time"] == new_time:
+            return "❌ Ώρα κατειλημμένη"
 
     data[index] = {
         "name": name,
         "phone": phone,
         "service": service,
-        "time": full_time
+        "time": new_time
     }
-
-    save(data)
-    return redirect("/admin")
-
 
 # ---------------- DELETE ----------------
 @app.route("/admin/delete/<int:index>")
