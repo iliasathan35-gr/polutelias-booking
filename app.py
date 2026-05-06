@@ -164,21 +164,39 @@ def admin():
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
 
-        bookings = []
+        slots = generate_slots(day.weekday())
+
+        day_bookings = []
+
+        booked_times = []
 
         for idx, d in enumerate(data):
             if d["time"].startswith(date_str):
-                bookings.append({
+                t = d["time"].split(" ")[1]
+                booked_times.append(t)
+
+                day_bookings.append({
                     "index": idx,
                     "name": d["name"],
                     "phone": d["phone"],
                     "service": d["service"],
-                    "time": d["time"]
+                    "time": d["time"],
+                    "status": "booked"
+                })
+
+        # 🔥 FREE slots
+        free_slots = []
+        for s in slots:
+            if s not in booked_times:
+                free_slots.append({
+                    "time": s,
+                    "status": "free"
                 })
 
         days.append({
             "date": date_str,
-            "bookings": bookings
+            "bookings": day_bookings,
+            "free_slots": free_slots
         })
 
     return render_template("admin.html", days=days)
