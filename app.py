@@ -109,7 +109,6 @@ def index():
             except:
                 pass
 
-        # ✅ SAVE
         data.append({
             "name": name,
             "phone": phone,
@@ -119,21 +118,13 @@ def index():
 
         save(data)
 
-        # 🔔 TELEGRAM NOTIFICATION
         send_telegram(
-            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
-            f"Όνομα: {name}\n"
-            f"Τηλ: {phone}\n"
-            f"Υπηρεσία: {service}\n"
-            f"Ώρα: {date} {time}"
+            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{date} {time}"
         )
 
         return redirect("/success")
 
-    # ---------------- GET ----------------
-
     today_dt = datetime.now()
-
     slots = generate_slots(today_dt.weekday())
 
     booked = []
@@ -187,7 +178,6 @@ def admin():
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
 
-        # 🇬🇷 Ελληνικό label ημερομηνίας
         label = f"{days_gr[day.weekday()]} {day.day} {months_gr[day.month - 1]} {day.year}"
 
         slots = generate_slots(day.weekday())
@@ -219,7 +209,6 @@ def admin():
     return render_template("admin.html", days=days)
 
 
-
 # ---------------- EDIT ----------------
 @app.route("/admin/edit/<int:index>", methods=["GET", "POST"])
 def admin_edit(index):
@@ -228,7 +217,6 @@ def admin_edit(index):
 
     data = load()
 
-    # ❌ safety check
     if index < 0 or index >= len(data):
         return redirect("/admin")
 
@@ -241,8 +229,7 @@ def admin_edit(index):
         save(data)
         return redirect("/admin")
 
-    booking = data[index]
-    return render_template("edit.html", b=booking, index=index)
+    return render_template("edit.html", b=data[index], index=index)
 
 
 # ---------------- DELETE ----------------
