@@ -1,138 +1,163 @@
 <!DOCTYPE html>
-<html lang="el">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #111;
-            color: #fff;
-            margin: 0;
-            padding: 20px;
-        }
+<style>
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    padding: 10px;
+}
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+h2 {
+    text-align: center;
+}
 
-        .day {
-            background: #1c1c1c;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-        }
+.day {
+    background: #1c1c1c;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
 
-        .day-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+.toggle-btn {
+    background: #333;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    width: 100%;
+    margin-bottom: 10px;
+}
 
-        .slots {
-            margin-top: 10px;
-        }
+.box {
+    display: none;
+    margin-top: 10px;
+}
 
-        .slot {
-            display: inline-block;
-            margin: 4px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 14px;
-        }
+.slot {
+    padding: 8px;
+    margin: 6px 0;
+    border-radius: 6px;
+}
 
-        .slot.free {
-            background: green;
-            color: white;
-        }
+.free {
+    background: #2e7d32;
+}
 
-        .slot.booked {
-            background: red;
-            color: white;
-        }
+.booked {
+    background: #c62828;
+}
 
-        .btn {
-            padding: 4px 8px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 5px;
-            text-decoration: none;
-            font-size: 12px;
-        }
+form {
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 5px;
+}
 
-        .book {
-            background: #5cb85c;
-            color: white;
-        }
+input, select {
+    width: 100%;
+    padding: 6px;
+    margin: 4px 0;
+}
 
-        .delete {
-            background: #d9534f;
-            color: white;
-        }
-
-        .booking {
-            background: #2a2a2a;
-            padding: 10px;
-            margin-top: 8px;
-            border-radius: 8px;
-        }
-
-    </style>
+button {
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+</style>
 </head>
 
 <body>
 
-<h1>💈 Admin Panel</h1>
+<h2>📅 Admin Panel</h2>
 
 {% for day in days %}
 
 <div class="day">
 
-    <!-- 📅 Ημερομηνία -->
-    <div class="day-title">
-        {{ day.label }}
-    </div>
+    <!-- ONLY BUTTON CONTROLS TOGGLE -->
+    <button type="button" class="toggle-btn" onclick="toggle({{ loop.index }})">
+        📆 {{ day.date }} (Άνοιγμα / Κλείσιμο)
+    </button>
 
-    <!-- ⏰ Slots -->
-    <div class="slots">
-        {% for slot in day.slots %}
+    <div class="box" id="box{{ loop.index }}">
 
-            {% if slot in day.booked_times %}
-                <span class="slot booked">🔴 {{ slot }}</span>
-            {% else %}
-                <span class="slot free">🟢 {{ slot }}</span>
+        <h4>🟢 Free Slots</h4>
 
-                <!-- admin booking -->
-                <a class="btn book" href="/admin/book/{{ day.date }}/{{ slot }}">+</a>
-            {% endif %}
+        {% for s in day.free_slots %}
+
+        <div class="slot free">
+            🟢 {{ s.time }}
+
+            <!-- ADD BOOKING -->
+            <form method="POST" action="/admin/add">
+                <input type="hidden" name="date" value="{{ day.date }}">
+                <input type="hidden" name="time" value="{{ s.time }}">
+
+                <input name="name" placeholder="Όνομα" required>
+                <input name="phone" placeholder="Τηλ" required>
+
+                <select name="service">
+                    <option>Κούρεμα</option>
+                    <option>Μούσι</option>
+                    <option>Κούρεμα + Μούσι</option>
+                </select>
+
+                <button type="submit">➕ Κράτηση</button>
+            </form>
+        </div>
 
         {% endfor %}
-    </div>
 
-    <!-- 📌 Bookings -->
-    <div class="bookings">
+        <h4>🔴 Booked</h4>
 
         {% for b in day.bookings %}
-        <div class="booking">
-            <b>{{ b.name }}</b> <br>
-            📞 {{ b.phone }} <br>
-            💈 {{ b.service }} <br>
-            🕒 {{ b.time }}
 
-            <br><br>
+        <div class="slot booked">
+            🔴 {{ b.time }} - {{ b.name }}
 
-            <a class="btn delete" href="/admin/delete/{{ b.index }}">Delete</a>
+            <!-- EDIT -->
+            <form method="POST" action="/admin/edit/{{ b.index }}">
+                <input name="name" value="{{ b.name }}">
+                <input name="phone" value="{{ b.phone }}">
+
+                <input type="hidden" name="date" value="{{ b.time.split(' ')[0] }}">
+                <input type="hidden" name="time" value="{{ b.time.split(' ')[1] }}">
+
+                <button type="submit">💾 Edit</button>
+            </form>
+
+            <!-- DELETE -->
+            <a href="/admin/delete/{{ b.index }}">
+                <button style="background:red;color:white;">❌ Delete</button>
+            </a>
+
         </div>
+
         {% endfor %}
 
     </div>
-
 </div>
 
 {% endfor %}
+
+<script>
+function toggle(id){
+    let box = document.getElementById("box"+id);
+
+    if (box.style.display === "block") {
+        box.style.display = "none";
+    } else {
+        box.style.display = "block";
+    }
+}
+</script>
 
 </body>
 </html>
