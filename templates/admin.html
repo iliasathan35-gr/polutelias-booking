@@ -4,111 +4,158 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body { font-family: Arial; background:#111; color:white; padding:10px; }
-
-.day {
-  background:#1c1c1c;
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:10px;
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    padding: 10px;
 }
 
-.box { display:none; margin-top:10px; }
+h2 {
+    text-align: center;
+}
 
-.slot { padding:8px; margin:5px 0; border-radius:6px; }
+.day {
+    background: #1c1c1c;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
 
-.free { background:#2e7d32; }
-.booked { background:#c62828; }
+.toggle-btn {
+    background: #333;
+    color: white;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.box {
+    display: none;
+    margin-top: 10px;
+}
+
+.slot {
+    padding: 8px;
+    margin: 6px 0;
+    border-radius: 6px;
+}
+
+.free {
+    background: #2e7d32;
+}
+
+.booked {
+    background: #c62828;
+}
 
 form {
-  background:#222;
-  padding:10px;
-  border-radius:8px;
-  margin-top:5px;
+    background: #222;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 5px;
 }
 
 input, select {
-  width:100%;
-  padding:6px;
-  margin:4px 0;
+    width: 100%;
+    padding: 6px;
+    margin: 4px 0;
 }
 
 button {
-  padding:6px;
-  border:none;
-  border-radius:6px;
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h2>📅 Admin</h2>
+<h2>📅 Admin Panel</h2>
 
 {% for day in days %}
 
-<div class="day" onclick="toggle({{ loop.index }})">
-  📆 {{ day.date }}
+<div class="day">
 
-  <div class="box" id="box{{ loop.index }}">
+    <!-- ONLY BUTTON CONTROLS TOGGLE -->
+    <button type="button" class="toggle-btn" onclick="toggle({{ loop.index }})">
+        📆 {{ day.date }} (Άνοιγμα / Κλείσιμο)
+    </button>
 
-    <h4>🟢 Free Slots</h4>
+    <div class="box" id="box{{ loop.index }}">
 
-    {% for s in day.free_slots %}
-      <div class="slot free">
-        {{ s.time }}
+        <h4>🟢 Free Slots</h4>
 
-        <form method="POST" action="/admin/add">
-          <input type="hidden" name="date" value="{{ day.date }}">
-          <input type="hidden" name="time" value="{{ s.time }}">
+        {% for s in day.free_slots %}
 
-          <input name="name" placeholder="Όνομα" required>
-          <input name="phone" placeholder="Τηλ" required>
+        <div class="slot free">
+            🟢 {{ s.time }}
 
-          <select name="service">
-            <option>Κούρεμα</option>
-            <option>Μούσι</option>
-            <option>Κούρεμα + Μούσι</option>
-          </select>
+            <!-- ADD BOOKING -->
+            <form method="POST" action="/admin/add">
+                <input type="hidden" name="date" value="{{ day.date }}">
+                <input type="hidden" name="time" value="{{ s.time }}">
 
-          <button type="submit">➕ Book</button>
-        </form>
+                <input name="name" placeholder="Όνομα" required>
+                <input name="phone" placeholder="Τηλ" required>
 
-      </div>
-    {% endfor %}
+                <select name="service">
+                    <option>Κούρεμα</option>
+                    <option>Μούσι</option>
+                    <option>Κούρεμα + Μούσι</option>
+                </select>
 
-    <h4>🔴 Booked</h4>
+                <button type="submit">➕ Κράτηση</button>
+            </form>
+        </div>
 
-    {% for b in day.bookings %}
-      <div class="slot booked">
-        {{ b.time }} - {{ b.name }}
+        {% endfor %}
 
-        <form method="POST" action="/admin/edit/{{ b.index }}">
-          <input name="name" value="{{ b.name }}">
-          <input name="phone" value="{{ b.phone }}">
+        <h4>🔴 Booked</h4>
 
-          <input type="hidden" name="date" value="{{ b.time.split(' ')[0] }}">
-          <input type="hidden" name="time" value="{{ b.time.split(' ')[1] }}">
+        {% for b in day.bookings %}
 
-          <button type="submit">Edit</button>
-        </form>
+        <div class="slot booked">
+            🔴 {{ b.time }} - {{ b.name }}
 
-        <a href="/admin/delete/{{ b.index }}">
-          <button>Delete</button>
-        </a>
+            <!-- EDIT -->
+            <form method="POST" action="/admin/edit/{{ b.index }}">
+                <input name="name" value="{{ b.name }}">
+                <input name="phone" value="{{ b.phone }}">
 
-      </div>
-    {% endfor %}
+                <input type="hidden" name="date" value="{{ b.time.split(' ')[0] }}">
+                <input type="hidden" name="time" value="{{ b.time.split(' ')[1] }}">
 
-  </div>
+                <button type="submit">💾 Edit</button>
+            </form>
+
+            <!-- DELETE -->
+            <a href="/admin/delete/{{ b.index }}">
+                <button style="background:red;color:white;">❌ Delete</button>
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
 </div>
 
 {% endfor %}
 
 <script>
-function toggle(i){
-  let box = document.getElementById("box"+i);
-  box.style.display = box.style.display === "block" ? "none" : "block";
+function toggle(id){
+    let box = document.getElementById("box"+id);
+
+    if (box.style.display === "block") {
+        box.style.display = "none";
+    } else {
+        box.style.display = "block";
+    }
 }
 </script>
 
