@@ -1,85 +1,64 @@
 <!DOCTYPE html>
 <html lang="el">
 <head>
-    <meta charset="UTF-8">
-    <title>Booking</title>
+<meta charset="UTF-8">
+<title>Booking</title>
 
-    <style>
-        body {
-            font-family: Arial;
-            background: #111;
-            color: white;
-            padding: 20px;
-        }
+<style>
+body { font-family: Arial; background:#111; color:white; padding:20px; }
 
-        .slot {
-            display: inline-block;
-            padding: 10px;
-            margin: 5px;
-            border-radius: 8px;
-        }
+.slot {
+    display:inline-block;
+    padding:10px;
+    margin:5px;
+    border-radius:8px;
+}
 
-        .free {
-            background: green;
-            color: white;
-        }
-
-        .booked {
-            background: red;
-            color: white;
-            opacity: 0.6;
-        }
-    </style>
+.free { background:green; cursor:pointer; }
+.booked { background:red; opacity:0.5; }
+</style>
 </head>
 
 <body>
 
-<h2>Κλείσε Ραντεβού</h2>
+<h2>Κράτηση Ραντεβού</h2>
 
 <form method="POST">
 
-    <input name="name" placeholder="Όνομα" required>
-    <input name="phone" placeholder="Τηλέφωνο" required>
+<input name="name" placeholder="Όνομα" required>
+<input name="phone" placeholder="Τηλέφωνο" required>
 
-    <br><br>
+<br><br>
 
-    <!-- SERVICES -->
-    <select name="service" required>
-        <option value="">Επίλεξε υπηρεσία</option>
+<select name="service" required>
+    <option value="">Υπηρεσία</option>
+    {% for s in services %}
+        <option value="{{ s }}">{{ s }}</option>
+    {% endfor %}
+</select>
 
-        {% for s in services %}
-            <option value="{{ s }}">{{ s }}</option>
-        {% endfor %}
-    </select>
+<br><br>
 
-    <br><br>
+<input type="date" name="date" value="{{ today }}" required>
 
-    <input type="date" name="date" value="{{ today }}" required>
+<br><br>
 
-    <br><br>
+<h3>Ώρες</h3>
 
-    <h3>Διαθέσιμες ώρες</h3>
+{% for s in slots %}
+    {% if s.status == "free" %}
+        <label class="slot free">
+            <input type="radio" name="time" value="{{ s.time }}" required>
+            🟢 {{ s.time }}
+        </label>
+    {% else %}
+        <div class="slot booked">🔴 {{ s.time }}</div>
+    {% endif %}
+{% endfor %}
 
-    <div>
-        {% for s in slots %}
+<br><br>
 
-            {% if s.status == "free" %}
-                <div class="slot free">
-                    🟢 {{ s.time }}
-                    <input type="radio" name="time" value="{{ s.time }}" required>
-                </div>
-            {% else %}
-                <div class="slot booked">
-                    🔴 {{ s.time }}
-                </div>
-            {% endif %}
-
-        {% endfor %}
-    </div>
-
-    <br><br>
-
-    <button type="submit">Κράτηση</button>
+<button type="submit">Κράτηση</button>
 
 </form>
 
