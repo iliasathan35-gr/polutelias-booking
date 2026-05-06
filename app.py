@@ -128,7 +128,13 @@ def index():
 
     available = [s for s in slots if s not in booked]
 
-    return render_template("index.html", services=SERVICES, slots=available)
+   return render_template(
+    "index.html",
+    services=SERVICES,
+    slots=available,
+    today=datetime.now().strftime("%Y-%m-%d"),
+    max_date=(datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d")
+)
 
 
 # ---------------- LOGIN ----------------
