@@ -46,7 +46,7 @@ a {
 input, select {
     width: 100%;
     padding: 6px;
-    margin: 3px 0;
+    margin: 4px 0;
     border-radius: 6px;
     border: none;
 }
@@ -66,10 +66,6 @@ button {
 .delete {
     background: red;
     color: white;
-}
-
-small {
-    opacity: 0.7;
 }
 </style>
 </head>
@@ -93,9 +89,6 @@ small {
 
             <div class="item">
 
-                <small>Ώρα: {{ b.time }}</small><br>
-
-                <!-- EDIT FORM -->
                 <form method="POST" action="/admin/edit/{{ b.index }}">
 
                     <input name="name" value="{{ b.name }}" placeholder="Όνομα">
@@ -109,8 +102,9 @@ small {
 
                     {% set parts = b.time.split(' ') %}
 
-                    <input type="date" name="date" value="{{ parts[0] }}">
-                    <input type="time" name="time" value="{{ parts[1] }}">
+                    <!-- IMPORTANT: αυτά είναι που έλειπαν σε πολλούς -->
+                    <input type="hidden" name="date" value="{{ parts[0] }}">
+                    <input type="hidden" name="time" value="{{ parts[1] }}">
 
                     <button type="submit" class="save">💾 Save</button>
 
@@ -118,7 +112,6 @@ small {
 
                 <br>
 
-                <!-- DELETE -->
                 <a href="/admin/delete/{{ b.index }}">
                     <button class="delete">❌ Delete</button>
                 </a>
