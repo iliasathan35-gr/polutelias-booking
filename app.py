@@ -230,41 +230,50 @@ def admin():
 
 
 # ---------------- ADD (ADMIN) ----------------
-@app.route("/admin/add", methods=["POST"])
-def admin_add():
+@app.route("/admin")
+def admin():
     if not session.get("admin"):
         return redirect("/login")
 
     data = load()
+    today = datetime.now()
 
-    name = request.form.get("name")
-    phone = request.form.get("phone")
-    service = request.form.get("service")
-    date = request.form.get("date")
-    time = request.form.get("time")
+    days = []
 
-    if not date or not time:
-        return "❌ Missing date/time"
+    for i in range(10):
+        day = today + timedelta(days=i)
+        date_str = day.strftime("%Y-%m-%d")
 
-    full_time = f"{date} {time}"
+        # ✅ LABEL
+        label = f"{days_gr[day.weekday()]} {day.day} {months_gr[day.month - 1]} {day.year}"
 
-    for d in data:
-        if d["time"] == full_time:
-            return "❌ Ώρα κατειλημμένη"
+        slots = generate_slots(day.weekday())
 
-    data.append({
-        "name": name,
-        "phone": phone,
-        "service": service,
-        "time": full_time,
-        "token": str(uuid.uuid4())
-    })
+        day_bookings = []
+        booked_times = []
 
-    save(data)
+        for idx, d in enumerate(data):
+            if d["time"].startswith(date_str):
+                t = d["time"].split(" ")[1]
+                booked_times.append(t)
 
-    send_telegram(f"💈 ADMIN ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{full_time}")
+                day_bookings.append({
+                    "index": idx,
+                    "name": d["name"],
+                    "phone": d["phone"],
+                    "service": d["service"],
+                    "time": d["time"],
+                    "status": "booked"
+                })
 
-    return redirect("/admin")
+        days.append({
+            "date": date_str,
+            "label": label,
+            "slots": slots,
+            "bookings": day_bookings
+        })
+
+    return render_template("admin.html", days=days)
 
 
 # ---------------- EDIT ----------------
