@@ -181,47 +181,42 @@ def admin():
     data = load()
     today = datetime.now()
 
-days = []
+    days = []
 
     for i in range(10):
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
 
+        # 🇬🇷 Ελληνικό label ημερομηνίας
         label = f"{days_gr[day.weekday()]} {day.day} {months_gr[day.month - 1]} {day.year}"
 
         slots = generate_slots(day.weekday())
 
         day_bookings = []
+        booked_times = []
 
-    for idx, d in enumerate(data):
-        if d["time"].startswith(date_str):
-            day_bookings.append(d)
+        for idx, d in enumerate(data):
+            if d["time"].startswith(date_str):
+                t = d["time"].split(" ")[1]
+                booked_times.append(t)
 
-    days.append({
-        "date": date_str,
-        "label": label,
-        "slots": slots,
-        "bookings": day_bookings
-    })
-
-        # 🔥 FREE slots
-        free_slots = []
-        for s in slots:
-            if s not in booked_times:
-                free_slots.append({
-                    "time": s,
-                    "status": "free"
+                day_bookings.append({
+                    "index": idx,
+                    "name": d["name"],
+                    "phone": d["phone"],
+                    "service": d["service"],
+                    "time": d["time"],
+                    "status": "booked"
                 })
 
         days.append({
-    "date": date_str,
-    "label": label,
-    "slots": slots,
-    "bookings": day_bookings
-})
+            "date": date_str,
+            "label": label,
+            "slots": slots,
+            "bookings": day_bookings
+        })
 
     return render_template("admin.html", days=days)
-
 
 # ---------------- ADD (ADMIN) ----------------
 @app.route("/admin")
