@@ -183,7 +183,7 @@ def admin():
 
     days = []
 
-    for i in range(10):
+for i in range(10):
     day = today + timedelta(days=i)
     date_str = day.strftime("%Y-%m-%d")
 
