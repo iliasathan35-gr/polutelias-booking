@@ -181,7 +181,7 @@ def admin():
     data = load()
     today = datetime.now()
 
-    days = []
+days = []
 
 for i in range(10):
     day = today + timedelta(days=i)
@@ -193,21 +193,16 @@ for i in range(10):
 
     day_bookings = []
 
-    booked_times = []
+    for idx, d in enumerate(data):
+        if d["time"].startswith(date_str):
+            day_bookings.append(d)
 
-        for idx, d in enumerate(data):
-            if d["time"].startswith(date_str):
-                t = d["time"].split(" ")[1]
-                booked_times.append(t)
-
-                day_bookings.append({
-                    "index": idx,
-                    "name": d["name"],
-                    "phone": d["phone"],
-                    "service": d["service"],
-                    "time": d["time"],
-                    "status": "booked"
-                })
+    days.append({
+        "date": date_str,
+        "label": label,
+        "slots": slots,
+        "bookings": day_bookings
+    })
 
         # 🔥 FREE slots
         free_slots = []
