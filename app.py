@@ -221,26 +221,28 @@ def admin():
 
 
 # ---------------- EDIT ----------------
-@app.route("/admin/edit/<int:index>", methods=["POST"])
+@app.route("/admin/edit/<int:index>", methods=["GET", "POST"])
 def admin_edit(index):
     if not session.get("admin"):
         return redirect("/login")
 
     data = load()
 
-    date = request.form.get("date")
-    time = request.form.get("time")
+    # ❌ safety check
+    if index < 0 or index >= len(data):
+        return redirect("/admin")
 
-    data[index] = {
-        "name": request.form.get("name"),
-        "phone": request.form.get("phone"),
-        "service": request.form.get("service"),
-        "time": f"{date} {time}",
-        "token": data[index].get("token", str(uuid.uuid4()))
-    }
+    if request.method == "POST":
+        data[index]["name"] = request.form["name"]
+        data[index]["phone"] = request.form["phone"]
+        data[index]["service"] = request.form["service"]
+        data[index]["time"] = request.form["time"]
 
-    save(data)
-    return redirect("/admin")
+        save(data)
+        return redirect("/admin")
+
+    booking = data[index]
+    return render_template("edit.html", b=booking, index=index)
 
 
 # ---------------- DELETE ----------------
