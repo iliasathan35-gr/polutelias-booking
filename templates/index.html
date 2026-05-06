@@ -88,14 +88,30 @@ button {
 
     <!-- DATE FIXED -->
     <label>📅 Ημερομηνία:</label>
-    <input 
-        type="date" 
-        name="date" 
-        value="{{ today }}"
-        min="{{ today }}"
-        max="{{ max_date }}"
-        required
-    >
+   <input 
+    type="date"
+    id="date"
+    name="date"
+    value="{{ today }}"
+    min="{{ today }}"
+    max="{{ max_date }}"
+    required
+>
+
+<script>
+document.getElementById("date").addEventListener("input", function () {
+
+    let selected = new Date(this.value);
+
+    // Κυριακή
+    if (selected.getDay() === 0) {
+
+        alert("❌ Τις Κυριακές είμαστε κλειστά");
+
+        this.value = "";
+    }
+});
+</script>
 
     <!-- TIME SLOTS -->
     <label>⏰ Ώρα:</label>
