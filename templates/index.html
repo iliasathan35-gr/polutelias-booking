@@ -81,19 +81,15 @@ button {
 
     <select name="service" required>
         <option value="">Επίλεξε υπηρεσία</option>
-{% for s in slots %}
+<select name="service" required>
 
-    {% if s.status == "booked" %}
-        <button disabled style="background:red;">
-            🔴 {{ s.time }}
-        </button>
-    {% else %}
-        <button style="background:green;">
-            🟢 {{ s.time }}
-        </button>
-    {% endif %}
+    <option value="">Επίλεξε υπηρεσία</option>
 
-{% endfor %}
+    {% for s in services %}
+        <option value="{{ s }}">{{ s }}</option>
+    {% endfor %}
+
+</select>
     </select>
 
     <!-- DATE FIXED -->
