@@ -4,7 +4,7 @@ import json
 import uuid
 import requests
 
-# 🇬🇷 Ελληνικές μέρες & μήνες
+# 🇬🇷 Ημέρες & Μήνες
 days_gr = ["Δευτέρα", "Τρίτη", "Τετάρτη", "Πέμπτη", "Παρασκευή", "Σάββατο", "Κυριακή"]
 
 months_gr = [
@@ -18,9 +18,6 @@ app.secret_key = "secret123"
 
 DATA_FILE = "data.json"
 
-SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
-
-
 # ---------------- DATA ----------------
 def load():
     try:
@@ -29,23 +26,20 @@ def load():
     except:
         return []
 
-
 def save(data):
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=2)
 
-
 # ---------------- TELEGRAM ----------------
 def send_telegram(text):
     try:
-        TOKEN = "8780779879:AAHKpT6H0aLiWQV85-08NvWh3l_xBEyHfLA"
-        CHAT_ID = "8780021902"
+        TOKEN = "YOUR_TOKEN"
+        CHAT_ID = "YOUR_CHAT_ID"
 
         url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
         requests.post(url, data={"chat_id": CHAT_ID, "text": text})
     except:
         pass
-
 
 # ---------------- SLOTS ----------------
 def generate_slots(day):
@@ -67,14 +61,15 @@ def generate_slots(day):
 
     return slots
 
+SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
 
 # ---------------- HOME ----------------
 @app.route("/", methods=["GET", "POST"])
 def index():
     data = load()
+    today_dt = datetime.now()
 
     if request.method == "POST":
-
         name = request.form.get("name")
         phone = request.form.get("phone")
         service = request.form.get("service")
@@ -84,46 +79,37 @@ def index():
         if not name or not phone or not service or not date or not time:
             return "❌ Συμπλήρωσε όλα τα πεδία"
 
-        try:
-            dt = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
-        except:
-            return "❌ Λάθος ημερομηνία/ώρα"
-
-        now = datetime.now()
+        dt = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
 
         if dt.weekday() == 6:
             return "❌ Κυριακή κλειστά"
 
-        if dt > now + timedelta(days=7):
+        if dt > today_dt + timedelta(days=7):
             return "❌ Μέχρι 7 μέρες"
 
-        if dt - now < timedelta(minutes=15):
+        if dt - today_dt < timedelta(minutes=15):
             return "❌ Πολύ κοντά"
 
         for d in data:
-            try:
-                existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
-                if abs((existing - dt).total_seconds()) < 2700:
-                    return "❌ Ώρα κατειλημμένη"
-            except:
-                pass
+            existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
+            if abs((existing - dt).total_seconds()) < 2700:
+                return "❌ Ώρα κατειλημμένη"
 
         data.append({
             "name": name,
             "phone": phone,
             "service": service,
-            "time": f"{date} {time}"
+            "time": f"{date} {time}",
+            "token": str(uuid.uuid4())
         })
 
         save(data)
 
-        send_telegram(
-            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{date} {time}"
-        )
+        send_telegram(f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ\n{name}\n{phone}\n{service}\n{date} {time}")
 
         return redirect("/success")
 
-    today_dt = datetime.now()
+    # GET
     slots = generate_slots(today_dt.weekday())
 
     booked = []
@@ -133,22 +119,22 @@ def index():
         if d["time"].startswith(today_str):
             booked.append(d["time"].split(" ")[1])
 
+    # 👉 status system (IMPORTANT FIX)
     slot_status = []
 
     for s in slots:
-        if s in booked:
-            slot_status.append({"time": s, "status": "booked"})
-        else:
-            slot_status.append({"time": s, "status": "free"})
+        slot_status.append({
+            "time": s,
+            "status": "booked" if s in booked else "free"
+        })
 
     return render_template(
-    "index.html",
-    services=SERVICES,
-    slots=slot_status,
-    today=today_dt.strftime("%Y-%m-%d"),
-    max_date=(today_dt + timedelta(days=7)).strftime("%Y-%m-%d")
-)
-
+        "index.html",
+        services=SERVICES,
+        slots=slot_status,
+        today=today_dt.strftime("%Y-%m-%d"),
+        max_date=(today_dt + timedelta(days=7)).strftime("%Y-%m-%d")
+    )
 
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["GET", "POST"])
@@ -161,12 +147,10 @@ def login():
 
     return render_template("login.html")
 
-
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/login")
-
 
 # ---------------- ADMIN ----------------
 @app.route("/admin")
@@ -182,6 +166,8 @@ def admin():
     for i in range(10):
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
+
+        label = f"{days_gr[day.weekday()]} {day.day} {months_gr[day.month - 1]} {day.year}"
 
         slots = generate_slots(day.weekday())
 
@@ -203,44 +189,13 @@ def admin():
 
         days.append({
             "date": date_str,
-            "label": f"{days_gr[day.weekday()]} {day.day} {months_gr[day.month - 1]} {day.year}",
+            "label": label,
             "slots": slots,
             "bookings": day_bookings,
             "booked_times": booked_times
         })
 
     return render_template("admin.html", days=days)
-
-
-# ---------------- ADMIN BOOK ----------------
-@app.route("/admin/book/<date>/<time>", methods=["GET", "POST"])
-def admin_book(date, time):
-    if not session.get("admin"):
-        return redirect("/login")
-
-    data = load()
-
-    if request.method == "POST":
-        name = request.form.get("name")
-        phone = request.form.get("phone")
-        service = request.form.get("service")
-
-        if not name or not phone:
-            return "❌ Missing data"
-
-        data.append({
-            "name": name,
-            "phone": phone,
-            "service": service,
-            "time": f"{date} {time}",
-            "token": str(uuid.uuid4())
-        })
-
-        save(data)
-        return redirect("/admin")
-
-    return render_template("admin_book.html", date=date, time=time)
-
 
 # ---------------- EDIT ----------------
 @app.route("/admin/edit/<int:index>", methods=["GET", "POST"])
@@ -264,7 +219,6 @@ def admin_edit(index):
 
     return render_template("edit.html", b=data[index], index=index)
 
-
 # ---------------- DELETE ----------------
 @app.route("/admin/delete/<int:index>")
 def admin_delete(index):
@@ -279,26 +233,10 @@ def admin_delete(index):
     save(data)
     return redirect("/admin")
 
-
-# ---------------- CANCEL WHOLE DAY ----------------
-@app.route("/admin/delete-day/<date>")
-def delete_day(date):
-    if not session.get("admin"):
-        return redirect("/login")
-
-    data = load()
-
-    data = [d for d in data if not d["time"].startswith(date)]
-
-    save(data)
-    return redirect("/admin")
-
-
 # ---------------- SUCCESS ----------------
 @app.route("/success")
 def success():
     return render_template("success.html")
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)
