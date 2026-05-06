@@ -306,6 +306,41 @@ def admin_delete(index):
 def success():
     return render_template("success.html")
 
+@app.route("/admin/edit/<int:index>", methods=["POST"])
+def admin_edit(index):
+    if not session.get("admin"):
+        return redirect("/login")
+
+    data = load()
+
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    service = request.form.get("service")
+    date = request.form.get("date")
+    time = request.form.get("time")
+
+    if not name or not phone or not date or not time:
+        return "❌ Λείπουν στοιχεία"
+
+    new_time = f"{date} {time}"
+
+    # overlap check (εκτός του ίδιου)
+    for i, d in enumerate(data):
+        if i == index:
+            continue
+        if d["time"] == new_time:
+            return "❌ Ώρα κατειλημμένη"
+
+    data[index] = {
+        "name": name,
+        "phone": phone,
+        "service": service,
+        "time": new_time
+    }
+
+    save(data)
+    return redirect("/admin")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
