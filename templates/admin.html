@@ -11,10 +11,6 @@ body {
     padding: 10px;
 }
 
-h2 {
-    text-align: center;
-}
-
 .day {
     margin-bottom: 20px;
     background: #1c1c1c;
@@ -27,21 +23,17 @@ h2 {
     margin: 6px 0;
     border-radius: 8px;
     background: #2a2a2a;
-    display: flex;
-    flex-direction: column;
 }
 
 .booked {
     background: #00c853;
     color: black;
-    font-weight: bold;
 }
 
 form {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-    margin-top: 5px;
 }
 
 input, select {
@@ -51,18 +43,14 @@ input, select {
 }
 
 button {
-    padding: 6px 10px;
+    padding: 6px;
     border: none;
     border-radius: 6px;
-    background: #00c853;
-    color: white;
     cursor: pointer;
 }
 
-.logout {
-    display: block;
-    text-align: center;
-    margin-bottom: 10px;
+.delete {
+    background: red;
     color: white;
 }
 </style>
@@ -71,8 +59,7 @@ button {
 <body>
 
 <h2>📅 Admin Panel</h2>
-
-<a href="/logout" class="logout">Logout</a>
+<a href="/logout">Logout</a>
 
 {% for day in days %}
 <div class="day">
@@ -81,39 +68,60 @@ button {
 
 {% if day.slots %}
     {% for s in day.slots %}
-        <div class="slot {% if s.booking %}booked{% endif %}">
 
-            <strong>{{ s.time }}</strong>
+        <div class="slot">
 
-            {% if s.booking %}
-                <div>
-                    {{ s.booking.name }} - {{ s.booking.phone }}<br>
-                    {{ s.booking.service }}
-                </div>
-            {% else %}
-                
-                <!-- ADD BOOKING -->
-                <form method="POST" action="/admin/add">
+        <strong>{{ s.time }}</strong>
 
-                    <input type="hidden" name="date" value="{{ day.date }}">
-                    <input type="hidden" name="time" value="{{ s.time }}">
+        {% if s.booking %}
 
-                    <input name="name" placeholder="Όνομα" required>
-                    <input name="phone" placeholder="Τηλ" required>
+            <!-- EDIT -->
+            <form method="POST" action="/admin/edit/{{ s.booking.index }}">
 
-                    <select name="service">
-                        <option>Κούρεμα</option>
-                        <option>Μούσι</option>
-                        <option>Κούρεμα + Μούσι</option>
-                    </select>
+                <input type="hidden" name="date" value="{{ day.date }}">
+                <input type="hidden" name="time" value="{{ s.time }}">
 
-                    <button type="submit">➕</button>
+                <input name="name" value="{{ s.booking.name }}">
+                <input name="phone" value="{{ s.booking.phone }}">
 
-                </form>
+                <select name="service">
+                    <option {% if s.booking.service=="Κούρεμα" %}selected{% endif %}>Κούρεμα</option>
+                    <option {% if s.booking.service=="Μούσι" %}selected{% endif %}>Μούσι</option>
+                    <option {% if s.booking.service=="Κούρεμα + Μούσι" %}selected{% endif %}>Κούρεμα + Μούσι</option>
+                </select>
 
-            {% endif %}
+                <button type="submit">💾</button>
+            </form>
+
+            <!-- DELETE -->
+            <a href="/admin/delete/{{ s.booking.index }}">
+                <button class="delete">❌</button>
+            </a>
+
+        {% else %}
+
+            <!-- ADD -->
+            <form method="POST" action="/admin/add">
+
+                <input type="hidden" name="date" value="{{ day.date }}">
+                <input type="hidden" name="time" value="{{ s.time }}">
+
+                <input name="name" placeholder="Όνομα">
+                <input name="phone" placeholder="Τηλ">
+
+                <select name="service">
+                    <option>Κούρεμα</option>
+                    <option>Μούσι</option>
+                    <option>Κούρεμα + Μούσι</option>
+                </select>
+
+                <button>➕</button>
+            </form>
+
+        {% endif %}
 
         </div>
+
     {% endfor %}
 {% else %}
     <p>❌ Κλειστά</p>
