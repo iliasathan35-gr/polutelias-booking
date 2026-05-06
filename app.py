@@ -87,19 +87,15 @@ def index():
         now = datetime.now()
         max_date = now + timedelta(days=7)
 
-        # ❌ Κυριακή
         if dt.weekday() == 6:
             return "❌ Κυριακή είμαστε κλειστά"
 
-        # ❌ πάνω από 7 μέρες
         if dt > max_date:
             return "❌ Μόνο έως 7 μέρες μπροστά"
 
-        # ❌ 15 λεπτά πριν
         if dt - now < timedelta(minutes=15):
             return "❌ Δεν επιτρέπεται κράτηση <15 λεπτά πριν"
 
-        # ❌ overlap
         for d in data:
             try:
                 existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
@@ -124,7 +120,6 @@ def index():
 
         return redirect("/success")
 
-    # default slots (σήμερα)
     today = datetime.now()
     slots = generate_slots(today.weekday())
 
@@ -145,7 +140,7 @@ def index():
     )
 
 
-# ---------------- API (για dynamic slots) ----------------
+# ---------------- API ----------------
 @app.route("/slots")
 def slots_api():
     date = request.args.get("date")
@@ -174,11 +169,6 @@ def slots_api():
 
     return jsonify(available)
 
-
-# ---------------- SUCCESS ----------------
-@app.route("/success")
-def success():
-    return render_template("success.html")
 
 # ---------------- LOGIN ----------------
 @app.route("/login", methods=["GET", "POST"])
@@ -214,16 +204,16 @@ def admin():
         weekday = day_date.weekday()
 
         slots = generate_slots(weekday)
-
         day_slots = []
 
         for s in slots:
             full_time = f"{day_date.strftime('%Y-%m-%d')} {s}"
 
             found = None
-            for d in data:
+            for idx, d in enumerate(data):
                 if d["time"] == full_time:
-                    found = d
+                    found = d.copy()
+                    found["index"] = idx
                     break
 
             day_slots.append({
@@ -233,12 +223,13 @@ def admin():
 
         days.append({
             "date": day_date.strftime("%Y-%m-%d"),
-            "weekday": weekday,
             "slots": day_slots
         })
 
     return render_template("admin.html", days=days)
 
+
+# ---------------- ADD ----------------
 @app.route("/admin/add", methods=["POST"])
 def admin_add():
     if not session.get("admin"):
@@ -252,12 +243,8 @@ def admin_add():
     date = request.form.get("date")
     time = request.form.get("time")
 
-    if not name or not phone:
-        return "❌ Συμπλήρωσε στοιχεία"
-
     full_time = f"{date} {time}"
 
-    # overlap check
     for d in data:
         if d["time"] == full_time:
             return "❌ Ήδη κλεισμένο"
@@ -270,8 +257,61 @@ def admin_add():
     })
 
     save(data)
+    return redirect("/admin")
+
+
+# ---------------- EDIT ----------------
+@app.route("/admin/edit/<int:index>", methods=["POST"])
+def admin_edit(index):
+    if not session.get("admin"):
+        return redirect("/login")
+
+    data = load()
+
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    service = request.form.get("service")
+    date = request.form.get("date")
+    time = request.form.get("time")
+
+    full_time = f"{date} {time}"
+
+    for i, d in enumerate(data):
+        if i == index:
+            continue
+        if d["time"] == full_time:
+            return "❌ Ήδη κλεισμένο"
+
+    data[index] = {
+        "name": name,
+        "phone": phone,
+        "service": service,
+        "time": full_time
+    }
+
+    save(data)
+    return redirect("/admin")
+
+
+# ---------------- DELETE ----------------
+@app.route("/admin/delete/<int:index>")
+def admin_delete(index):
+    if not session.get("admin"):
+        return redirect("/login")
+
+    data = load()
+
+    if 0 <= index < len(data):
+        data.pop(index)
+        save(data)
 
     return redirect("/admin")
+
+
+# ---------------- SUCCESS ----------------
+@app.route("/success")
+def success():
+    return render_template("success.html")
 
 
 if __name__ == "__main__":
