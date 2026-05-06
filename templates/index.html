@@ -1,66 +1,133 @@
 <!DOCTYPE html>
-<html lang="el">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Booking</title>
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Polutelias 💈</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body { font-family: Arial; background:#111; color:white; padding:20px; }
-
-.slot {
-    display:inline-block;
-    padding:10px;
-    margin:5px;
-    border-radius:8px;
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    padding: 20px;
 }
 
-.free { background:green; cursor:pointer; }
-.booked { background:red; opacity:0.5; }
+h2 {
+    text-align: center;
+}
+
+form {
+    background: #1c1c1c;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #00c853;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.slots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.slot {
+    background: #333;
+    padding: 10px;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.slot:hover {
+    background: #555;
+}
+
+.selected {
+    background: #00c853 !important;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Κράτηση Ραντεβού</h2>
+<h2>💈 Κλείσε Ραντεβού</h2>
 
 <form method="POST">
 
-<input name="name" placeholder="Όνομα" required>
-<input name="phone" placeholder="Τηλέφωνο" required>
+    <input name="name" placeholder="Όνομα" required>
 
-<br><br>
+    <input name="phone" placeholder="Τηλέφωνο" required>
 
-<select name="service" required>
-    <option value="">Υπηρεσία</option>
-    {% for s in services %}
-        <option value="{{ s }}">{{ s }}</option>
-    {% endfor %}
-</select>
+    <select name="service" required>
+        <option value="">Επίλεξε υπηρεσία</option>
+        {% for s in services %}
+            <option>{{ s }}</option>
+        {% endfor %}
+    </select>
 
-<br><br>
+    <!-- DATE FIXED -->
+    <label>📅 Ημερομηνία:</label>
+    <input 
+        type="date" 
+        name="date" 
+        value="{{ today }}"
+        min="{{ today }}"
+        max="{{ max_date }}"
+        required
+    >
 
-<input type="date" name="date" value="{{ today }}" required>
+    <!-- TIME SLOTS -->
+    <label>⏰ Ώρα:</label>
 
-<br><br>
+    <div class="slots">
+        {% for s in slots %}
+        <div class="slot" onclick="selectTime('{{ s }}', this)">
+            {{ s }}
+        </div>
+        {% endfor %}
+    </div>
 
-<h3>Ώρες</h3>
+    <!-- hidden input για ώρα -->
+    <input type="hidden" name="time" id="timeInput" required>
 
-{% for s in slots %}
-    {% if s.status == "free" %}
-        <label class="slot free">
-            <input type="radio" name="time" value="{{ s.time }}" required>
-            🟢 {{ s.time }}
-        </label>
-    {% else %}
-        <div class="slot booked">🔴 {{ s.time }}</div>
-    {% endif %}
-{% endfor %}
+    <br>
 
-<br><br>
-
-<button type="submit">Κράτηση</button>
+    <button type="submit">Κλείσε Ραντεβού</button>
 
 </form>
+
+<script>
+function selectTime(time, el){
+
+    document.getElementById("timeInput").value = time;
+
+    let slots = document.querySelectorAll(".slot");
+    slots.forEach(s => s.classList.remove("selected"));
+
+    el.classList.add("selected");
+}
+</script>
 
 </body>
 </html>
