@@ -199,12 +199,9 @@ def admin():
         return redirect("/login")
 
     data = load()
-
     today = datetime.now()
-
     days = []
 
-    # 🇬🇷 Greek days
     greek_days = {
         "Monday": "Δευτέρα",
         "Tuesday": "Τρίτη",
@@ -216,63 +213,39 @@ def admin():
     }
 
     for i in range(10):
-
         day = today + timedelta(days=i)
-
         date_str = day.strftime("%Y-%m-%d")
 
-        # 🔥 Greek formatted date
         english_day = day.strftime("%A")
-
         greek_day = greek_days[english_day]
-
         formatted_date = f"{greek_day} {day.strftime('%d/%m/%Y')}"
 
         slots = generate_slots(day.weekday())
-
-        day_bookings = []
-
-        booked_times = []
-
-        for idx, d in enumerate(data):
-
-            if d["time"].startswith(date_str):
-
-                t = d["time"].split(" ")[1]
-
-                booked_times.append(t)
-
-                day_bookings.append({
-                    "index": idx,
-                    "name": d["name"],
-                    "phone": d["phone"],
-                    "service": d["service"],
-                    "time": d["time"],
-                    "status": "booked"
-                })
-
-        # 🔥 FREE slots
-        free_slots = []
+        day_slots = []
 
         for s in slots:
+            full_time = f"{date_str} {s}"
 
-            if s not in booked_times:
+            booking = None
 
-                free_slots.append({
-                    "time": s,
-                    "status": "free"
-                })
+            for idx, d in enumerate(data):
+                if d["time"] == full_time:
+                    booking = d.copy()
+                    booking["index"] = idx
+                    break
+
+            day_slots.append({
+                "time": s,
+                "booking": booking
+            })
 
         days.append({
             "date": formatted_date,
             "real_date": date_str,
-            "bookings": day_bookings,
-            "free_slots": free_slots
+            "slots": day_slots
         })
 
     return render_template("admin.html", days=days)
-
-
 # ---------------- ADD (ADMIN) ----------------
 @app.route("/admin/add", methods=["POST"])
 def admin_add():
