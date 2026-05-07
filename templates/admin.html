@@ -225,6 +225,18 @@ select:focus{
     
 </head>
 
+<script>
+
+if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker.register("/static/service-worker.js")
+
+    .then(() => console.log("Admin PWA Ready"));
+
+}
+
+</script>
+    
 <body>
 
 <div class="container">
