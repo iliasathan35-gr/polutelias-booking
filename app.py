@@ -372,24 +372,25 @@ def subscribe():
     return {"success": True}
 
 @app.route("/test-push")
-def test_push():
+def send_push_to_phone(phone, title, body):
     subs = load_push_subscriptions()
 
-    for sub in subs:
-        try:
-            webpush(
-                subscription_info=sub,
-                data=json.dumps({
-                    "title": "Polutelias 💈",
-                    "body": "Δοκιμαστική ειδοποίηση από το app!"
-                }),
-                vapid_private_key=os.environ.get("VAPID_PRIVATE_KEY"),
-                vapid_claims={
-                    "sub": os.environ.get("VAPID_EMAIL")
-                }
-            )
-        except Exception as e:
-            print("Push error:", e)
+    for item in subs:
+        if item.get("phone") == phone:
+            try:
+                webpush(
+                    subscription_info=item["subscription"],
+                    data=json.dumps({
+                        "title": title,
+                        "body": body
+                    }),
+                    vapid_private_key=os.environ.get("VAPID_PRIVATE_KEY"),
+                    vapid_claims={
+                        "sub": os.environ.get("VAPID_EMAIL")
+                    }
+                )
+            except Exception as e:
+                print("Push error:", e)
 
     return "Push sent"
 
