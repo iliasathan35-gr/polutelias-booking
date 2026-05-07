@@ -349,12 +349,25 @@ def vapid_public_key():
 
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
-    sub = request.get_json()
+    payload = request.get_json()
+
+    phone = payload.get("phone")
+    subscription = payload.get("subscription")
+
+    if not phone or not subscription:
+        return {"success": False}
+
     subs = load_push_subscriptions()
 
-    if sub not in subs:
-        subs.append(sub)
-        save_push_subscriptions(subs)
+    # σβήνουμε παλιό ίδιο phone
+    subs = [s for s in subs if s.get("phone") != phone]
+
+    subs.append({
+        "phone": phone,
+        "subscription": subscription
+    })
+
+    save_push_subscriptions(subs)
 
     return {"success": True}
 
