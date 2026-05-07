@@ -1,6 +1,11 @@
 from flask import Flask, render_template, request, redirect, session
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
+from datetime import datetime
+import pytz
+
+def now_gr():
+    tz = pytz.timezone("Europe/Athens")
+    return datetime.now(tz)
 import json
 import uuid
 import requests
