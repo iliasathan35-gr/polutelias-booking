@@ -422,6 +422,60 @@ function toggle(id){
 }
 
 </script>
+
+<script>
+function toggle(id){
+
+    let box = document.getElementById("box"+id);
+
+    if(box.style.display === "block"){
+        box.style.display = "none";
+    } else {
+        box.style.display = "block";
+    }
+}
+
+
+// LIVE UPDATE ΧΩΡΙΣ ΝΑ ΚΛΕΙΝΟΥΝ ΟΙ ΜΕΡΕΣ
+setInterval(function(){
+
+    // μην κάνει update όσο γράφεις σε input/select
+    const active = document.activeElement;
+    if(active && (active.tagName === "INPUT" || active.tagName === "SELECT")){
+        return;
+    }
+
+    // κρατάμε ποιες μέρες είναι ανοιχτές
+    let openBoxes = [];
+
+    document.querySelectorAll(".box").forEach(box => {
+        if(box.style.display === "block"){
+            openBoxes.push(box.id);
+        }
+    });
+
+    fetch(window.location.href)
+        .then(res => res.text())
+        .then(html => {
+
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(html, "text/html");
+
+            // παίρνουμε μόνο το περιεχόμενο του body
+            document.body.innerHTML = doc.body.innerHTML;
+
+            // ξανανοίγουμε όσες ήταν ανοιχτές
+            openBoxes.forEach(id => {
+                let box = document.getElementById(id);
+                if(box){
+                    box.style.display = "block";
+                }
+            });
+
+        });
+
+}, 7000);
+</script>
     
 </body>
 </html>
