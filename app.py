@@ -77,24 +77,15 @@ def slots_api():
     data = load()
 
     try:
-        dt = datetime.strptime(date, "%Y-%m-%d")
+       dt = datetime.strptime(date, "%Y-%m-%d")
 
-    weekday = dt.weekday()
+weekday = dt.weekday()
 
-    # Sunday
-    if weekday == 6:
-        return jsonify([])
+# Sunday
+if weekday == 6:
+    return jsonify([])
 
-    slots = generate_slots(weekday)
-
-         booked = []
-         for d in data:
-            if d["time"].startswith(date):
-                 booked.append(d["time"].split(" ")[1])
-
-         available = [s for s in slots if s not in booked]
-
-        return jsonify(available)
+slots = generate_slots(weekday)
 
 
 # ---------------- HOME ----------------
