@@ -192,17 +192,39 @@ def logout():
 # ---------------- ADMIN ----------------
 @app.route("/admin")
 def admin():
+
     if not session.get("admin"):
         return redirect("/login")
 
     data = load()
+
     today = datetime.now()
 
     days = []
 
+    # 🇬🇷 Greek days
+    greek_days = {
+        "Monday": "Δευτέρα",
+        "Tuesday": "Τρίτη",
+        "Wednesday": "Τετάρτη",
+        "Thursday": "Πέμπτη",
+        "Friday": "Παρασκευή",
+        "Saturday": "Σάββατο",
+        "Sunday": "Κυριακή"
+    }
+
     for i in range(10):
+
         day = today + timedelta(days=i)
+
         date_str = day.strftime("%Y-%m-%d")
+
+        # 🔥 Greek formatted date
+        english_day = day.strftime("%A")
+
+        greek_day = greek_days[english_day]
+
+        formatted_date = f"{greek_day} {day.strftime('%d/%m/%Y')}"
 
         slots = generate_slots(day.weekday())
 
@@ -211,8 +233,11 @@ def admin():
         booked_times = []
 
         for idx, d in enumerate(data):
+
             if d["time"].startswith(date_str):
+
                 t = d["time"].split(" ")[1]
+
                 booked_times.append(t)
 
                 day_bookings.append({
@@ -226,15 +251,19 @@ def admin():
 
         # 🔥 FREE slots
         free_slots = []
+
         for s in slots:
+
             if s not in booked_times:
+
                 free_slots.append({
                     "time": s,
                     "status": "free"
                 })
 
         days.append({
-            "date": date_str,
+            "date": formatted_date,
+            "real_date": date_str,
             "bookings": day_bookings,
             "free_slots": free_slots
         })
