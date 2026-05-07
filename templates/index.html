@@ -550,15 +550,25 @@ async function enableNotifications() {
         applicationServerKey: urlBase64ToUint8Array(keyData.publicKey)
     });
 
-    await fetch("/subscribe", {
-        method: "POST",
-        body: JSON.stringify(sub),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
+  const phone = document.querySelector("input[name='phone']").value;
 
-    alert("Οι ειδοποιήσεις ενεργοποιήθηκαν ✅");
+if(!phone){
+    alert("Γράψε πρώτα το τηλέφωνό σου.");
+    return;
+}
+
+await fetch("/subscribe", {
+    method: "POST",
+    body: JSON.stringify({
+        phone: phone,
+        subscription: sub
+    }),
+    headers: {
+        "Content-Type": "application/json"
+    }
+});
+
+alert("Οι ειδοποιήσεις ενεργοποιήθηκαν ✅");
 }
 </script>
     
