@@ -241,14 +241,6 @@ def admin():
 
     return render_template("admin.html", days=days)
 
-@app.route("/admin-data")
-def admin_data():
-    if not session.get("admin"):
-        return {"ok": False}
-
-    data = load()
-    return {"ok": True, "data": data}
-
 
 # ---------------- ADD (ADMIN) ----------------
 @app.route("/admin/add", methods=["POST"])
