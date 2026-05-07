@@ -159,22 +159,6 @@ function toggle(id){
 }
 </script>
 
-<script>
-
-setInterval(function(){
-
-    fetch("/admin-data")
-    .then(res => res.json())
-    .then(data => {
-
-        // απλά refresh page data (safe version)
-        location.reload();
-
-    });
-
-}, 5000);
-
-</script>
     
 </body>
 </html>
