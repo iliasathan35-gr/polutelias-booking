@@ -5,7 +5,9 @@ import uuid
 import requests
 
 app = Flask(__name__)
-app.secret_key = "secret123"
+import os
+
+app.secret_key = os.environ.get("SECRET_KEY")
 
 DATA_FILE = "data.json"
 
