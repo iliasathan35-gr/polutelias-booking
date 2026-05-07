@@ -1,12 +1,10 @@
 from flask import Flask, render_template, request, redirect, session
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
 import json
 import uuid
 import requests
 
 app = Flask(__name__)
-GREECE_TZ = ZoneInfo("Europe/Athens")
 app.secret_key = "secret123"
 
 DATA_FILE = "data.json"
