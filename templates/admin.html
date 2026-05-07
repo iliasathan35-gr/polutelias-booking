@@ -3,162 +3,416 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-body {
-    font-family: Arial;
-    background: #111;
-    color: white;
-    padding: 10px;
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-h2 {
-    text-align: center;
+body{
+    font-family:'Poppins',sans-serif;
+    background:#0b0b0b;
+    color:white;
+    padding:20px;
 }
 
-.day {
-    background: #1c1c1c;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 10px;
+.container{
+    max-width:700px;
+    margin:auto;
 }
 
-.toggle-btn {
-    background: #333;
-    color: white;
-    padding: 8px;
-    border: none;
-    border-radius: 6px;
-    width: 100%;
-    margin-bottom: 10px;
+.top{
+    margin-bottom:25px;
 }
 
-.box {
-    display: none;
-    margin-top: 10px;
+.top h1{
+    font-size:32px;
+    margin-bottom:5px;
 }
 
-.slot {
-    padding: 8px;
-    margin: 6px 0;
-    border-radius: 6px;
+.top p{
+    color:#999;
 }
 
-.free {
-    background: #2e7d32;
+.day{
+    background:#151515;
+    border-radius:28px;
+    padding:18px;
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,0.05);
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
 }
 
-.booked {
-    background: #c62828;
+.toggle-btn{
+    width:100%;
+    border:none;
+    background:linear-gradient(135deg,#1e1e1e,#191919);
+    color:white;
+    padding:18px;
+    border-radius:22px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.2s;
 }
 
-form {
-    background: #222;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 5px;
+.toggle-btn:hover{
+    transform:translateY(-2px);
 }
 
-input, select {
-    width: 100%;
-    padding: 6px;
-    margin: 4px 0;
+.box{
+    display:none;
+    margin-top:18px;
 }
 
-button {
-    padding: 6px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+.section-title{
+    margin:18px 0 12px;
+    color:#bbb;
+    font-size:14px;
+    font-weight:600;
 }
+
+.slot{
+    border-radius:22px;
+    padding:18px;
+    margin-bottom:14px;
+    animation:fade 0.3s ease;
+}
+
+.free{
+    background:#102214;
+    border:1px solid rgba(0,255,128,0.15);
+}
+
+.booked{
+    background:#241212;
+    border:1px solid rgba(255,0,0,0.12);
+}
+
+.slot-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.time{
+    font-size:20px;
+    font-weight:700;
+}
+
+.badge{
+    padding:8px 12px;
+    border-radius:14px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.badge.free-badge{
+    background:#00c853;
+}
+
+.badge.booked-badge{
+    background:#ff5252;
+}
+
+.client{
+    color:#ddd;
+    margin-bottom:14px;
+}
+
+form{
+    margin-top:10px;
+}
+
+input,
+select{
+    width:100%;
+    background:#1e1e1e;
+    border:none;
+    color:white;
+    padding:14px;
+    border-radius:16px;
+    margin-bottom:10px;
+    outline:none;
+    font-size:14px;
+}
+
+input:focus,
+select:focus{
+    border:1px solid #00c853;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.btn{
+    flex:1;
+    border:none;
+    padding:14px;
+    border-radius:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.add-btn{
+    background:#00c853;
+    color:white;
+}
+
+.edit-btn{
+    background:#2962ff;
+    color:white;
+}
+
+.delete-btn{
+    background:#ff1744;
+    color:white;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.btn:hover{
+    transform:scale(1.02);
+}
+
+.floating{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#00c853,#00e676);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    color:white;
+    box-shadow:0 12px 25px rgba(0,200,83,0.4);
+}
+
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
 </style>
 </head>
 
 <body>
 
-<h2>📅 Admin Panel</h2>
+<div class="container">
 
-{% for day in days %}
+    <div class="top">
+        <h1>💈 Admin Panel</h1>
+        <p>Manage bookings like a native app</p>
+    </div>
 
-<div class="day">
+    {% for day in days %}
 
-    <!-- ONLY BUTTON CONTROLS TOGGLE -->
-    <button type="button" class="toggle-btn" onclick="toggle({{ loop.index }})">
-        📆 {{ day.date }} (Άνοιγμα / Κλείσιμο)
-    </button>
+    <div class="day">
 
-    <div class="box" id="box{{ loop.index }}">
+        <button
+            type="button"
+            class="toggle-btn"
+            onclick="toggle({{ loop.index }})"
+        >
+            📅 {{ day.date }}
+        </button>
 
-        <h4>🟢 Free Slots</h4>
+        <div class="box" id="box{{ loop.index }}">
 
-        {% for s in day.free_slots %}
+            <!-- FREE -->
+            <div class="section-title">
+                🟢 Available Slots
+            </div>
 
-        <div class="slot free">
-            🟢 {{ s.time }}
+            {% for s in day.free_slots %}
 
-            <!-- ADD BOOKING -->
-            <form method="POST" action="/admin/add">
-                <input type="hidden" name="date" value="{{ day.date }}">
-                <input type="hidden" name="time" value="{{ s.time }}">
+            <div class="slot free">
 
-                <input name="name" placeholder="Όνομα" required>
-                <input name="phone" placeholder="Τηλ" required>
+                <div class="slot-top">
+                    <div class="time">{{ s.time }}</div>
 
-                <select name="service">
-                    <option>Κούρεμα</option>
-                    <option>Μούσι</option>
-                    <option>Κούρεμα + Μούσι</option>
-                </select>
+                    <div class="badge free-badge">
+                        FREE
+                    </div>
+                </div>
 
-                <button type="submit">➕ Κράτηση</button>
-            </form>
+                <form method="POST" action="/admin/add">
+
+                    <input
+                        type="hidden"
+                        name="date"
+                        value="{{ day.date }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="time"
+                        value="{{ s.time }}"
+                    >
+
+                    <input
+                        name="name"
+                        placeholder="Όνομα"
+                        required
+                    >
+
+                    <input
+                        name="phone"
+                        placeholder="Τηλέφωνο"
+                        required
+                    >
+
+                    <select name="service">
+                        <option>Κούρεμα</option>
+                        <option>Μούσι</option>
+                        <option>Κούρεμα + Μούσι</option>
+                    </select>
+
+                    <button class="btn add-btn" type="submit">
+                        ➕ Κράτηση
+                    </button>
+
+                </form>
+
+            </div>
+
+            {% endfor %}
+
+            <!-- BOOKED -->
+            <div class="section-title">
+                🔴 Booked Appointments
+            </div>
+
+            {% for b in day.bookings %}
+
+            <div class="slot booked">
+
+                <div class="slot-top">
+
+                    <div class="time">
+                        {{ b.time }}
+                    </div>
+
+                    <div class="badge booked-badge">
+                        BOOKED
+                    </div>
+
+                </div>
+
+                <div class="client">
+                    👤 {{ b.name }}<br>
+                    📞 {{ b.phone }}
+                </div>
+
+                <form method="POST" action="/admin/edit/{{ b.index }}">
+
+                    <input
+                        name="name"
+                        value="{{ b.name }}"
+                    >
+
+                    <input
+                        name="phone"
+                        value="{{ b.phone }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="date"
+                        value="{{ b.time.split(' ')[0] }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="time"
+                        value="{{ b.time.split(' ')[1] }}"
+                    >
+
+                    <div class="actions">
+
+                        <button
+                            type="submit"
+                            class="btn edit-btn"
+                        >
+                            💾 Edit
+                        </button>
+
+                        <a
+                            href="/admin/delete/{{ b.index }}"
+                            class="btn delete-btn"
+                        >
+                            ❌ Delete
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            {% endfor %}
+
         </div>
-
-        {% endfor %}
-
-        <h4>🔴 Booked</h4>
-
-        {% for b in day.bookings %}
-
-        <div class="slot booked">
-            🔴 {{ b.time }} - {{ b.name }}
-
-            <!-- EDIT -->
-            <form method="POST" action="/admin/edit/{{ b.index }}">
-                <input name="name" value="{{ b.name }}">
-                <input name="phone" value="{{ b.phone }}">
-
-                <input type="hidden" name="date" value="{{ b.time.split(' ')[0] }}">
-                <input type="hidden" name="time" value="{{ b.time.split(' ')[1] }}">
-
-                <button type="submit">💾 Edit</button>
-            </form>
-
-            <!-- DELETE -->
-            <a href="/admin/delete/{{ b.index }}">
-                <button style="background:red;color:white;">❌ Delete</button>
-            </a>
-
-        </div>
-
-        {% endfor %}
 
     </div>
+
+    {% endfor %}
+
 </div>
 
-{% endfor %}
+<div class="floating">
+    +
+</div>
 
 <script>
+
 function toggle(id){
+
     let box = document.getElementById("box"+id);
 
-    if (box.style.display === "block") {
+    if(box.style.display === "block"){
+
         box.style.display = "none";
+
     } else {
+
         box.style.display = "block";
     }
 }
+
+
+// LIVE UPDATES
+setInterval(function(){
+
+    location.reload();
+
+}, 10000);
+
 </script>
 
-    
 </body>
 </html>
