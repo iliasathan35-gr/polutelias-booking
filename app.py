@@ -395,19 +395,6 @@ def send_push_to_phone(phone, title, body):
 # 4 ώρες πριν (λόγω UTC)
 if timedelta(hours=3, minutes=59) <= time_left <= timedelta(hours=4, minutes=1):
 
-@app.route("/test-push-phone/<phone>")
-def test_push_phone(phone):
-    send_push_to_phone(
-        phone,
-        "Polutelias 💈",
-        "Δοκιμαστική ειδοποίηση μόνο για εσένα!"
-    )
-
-    return "Push sent to phone"
-
-from apscheduler.schedulers.background import BackgroundScheduler
-
-
 def check_reminders():
 
     data = load()
