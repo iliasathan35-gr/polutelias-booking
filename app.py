@@ -11,6 +11,9 @@ app.secret_key = "secret123"
 DATA_FILE = "data.json"
 
 
+def now_gr():
+    return datetime.now(ZoneInfo("Europe/Athens"))
+
 # ---------------- DATA ----------------
 def load():
     try:
