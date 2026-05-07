@@ -2,117 +2,253 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Polutelias 💈</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-body {
-    font-family: Arial;
-    background: #111;
-    color: white;
-    padding: 20px;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-h2 {
-    text-align: center;
+body{
+    font-family:'Poppins',sans-serif;
+    background:#0f0f0f;
+    color:white;
+    min-height:100vh;
+    padding:20px;
 }
 
-form {
-    background: #1c1c1c;
-    padding: 15px;
-    border-radius: 10px;
+.container{
+    max-width:500px;
+    margin:auto;
 }
 
-input, select {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 6px;
-    border: none;
-    box-sizing: border-box;
+.hero{
+    background:linear-gradient(145deg,#1a1a1a,#111);
+    border-radius:24px;
+    padding:30px 20px;
+    margin-bottom:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+    border:1px solid rgba(255,255,255,0.05);
 }
 
-button {
-    width: 100%;
-    padding: 12px;
-    background: #00c853;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
+.logo{
+    font-size:34px;
+    margin-bottom:10px;
 }
 
-.slots {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 10px;
+.hero h1{
+    font-size:30px;
+    margin-bottom:8px;
 }
 
-.slot {
-    background: #333;
-    padding: 10px;
-    text-align: center;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
+.hero p{
+    color:#aaa;
+    font-size:14px;
 }
 
-.slot:hover {
-    background: #555;
+.card{
+    background:#171717;
+    border-radius:24px;
+    padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    border:1px solid rgba(255,255,255,0.05);
 }
 
-.selected {
-    background: #00c853 !important;
+.section-title{
+    font-size:15px;
+    margin-bottom:10px;
+    color:#bbb;
+    font-weight:600;
+}
+
+input,
+select{
+    width:100%;
+    background:#222;
+    color:white;
+    border:none;
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:14px;
+    font-size:15px;
+    outline:none;
+}
+
+input:focus,
+select:focus{
+    border:1px solid #00c853;
+}
+
+.slots{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:10px;
+}
+
+.slot{
+    background:#262626;
+    border-radius:16px;
+    padding:14px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition:0.2s;
+    font-weight:600;
+    border:1px solid transparent;
+}
+
+.slot:hover{
+    transform:scale(1.03);
+    background:#333;
+}
+
+.selected{
+    background:#00c853 !important;
+    color:white;
+    border:1px solid #00ff80;
+    box-shadow:0 0 12px rgba(0,200,83,0.5);
+}
+
+.book-btn{
+    width:100%;
+    margin-top:18px;
+    border:none;
+    background:linear-gradient(135deg,#00c853,#00e676);
+    color:white;
+    padding:18px;
+    border-radius:18px;
+    font-size:17px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.book-btn:hover{
+    transform:translateY(-2px);
+}
+
+.info{
+    margin-top:18px;
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+}
+
+.info-box{
+    min-width:120px;
+    background:#1f1f1f;
+    border-radius:18px;
+    padding:14px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,0.05);
+}
+
+.info-box h3{
+    font-size:14px;
+    margin-bottom:4px;
+}
+
+.info-box p{
+    color:#aaa;
+    font-size:12px;
+}
+
+.no-slots{
+    background:#222;
+    border-radius:16px;
+    padding:16px;
+    text-align:center;
+    color:#aaa;
+}
+
+@media(max-width:500px){
+    .slots{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 </style>
 </head>
 
 <body>
 
-<h2>💈 Κλείσε Ραντεβού</h2>
+<div class="container">
 
-<form method="POST">
+    <div class="hero">
+        <div class="logo">💈</div>
+        <h1>Polutelias</h1>
+        <p>Premium Barber Booking Experience</p>
+    </div>
 
-    <input name="name" placeholder="Όνομα" required>
+    <div class="card">
 
-    <input name="phone" placeholder="Τηλέφωνο" required>
+        <form method="POST">
 
-    <select name="service" required>
-        <option value="">Επίλεξε υπηρεσία</option>
+            <div class="section-title">👤 Τα στοιχεία σου</div>
 
-        {% for s in services %}
-            <option>{{ s }}</option>
-        {% endfor %}
-    </select>
+            <input name="name" placeholder="Όνομα" required>
 
-    <!-- DATE -->
-    <label>📅 Ημερομηνία:</label>
+            <input name="phone" placeholder="Τηλέφωνο" required>
 
-    <input 
-        type="date"
-        id="date"
-        name="date"
-        value="{{ today }}"
-        min="{{ today }}"
-        max="{{ max_date }}"
-        required
-    >
+            <div class="section-title">✂ Υπηρεσία</div>
 
-    <!-- TIME -->
-    <label>⏰ Ώρα:</label>
+            <select name="service" required>
+                <option value="">Επίλεξε υπηρεσία</option>
 
-    <div class="slots" id="slots"></div>
+                {% for s in services %}
+                    <option>{{ s }}</option>
+                {% endfor %}
+            </select>
 
-    <!-- hidden time input -->
-    <input type="hidden" name="time" id="timeInput" required>
+            <div class="section-title">📅 Ημερομηνία</div>
 
-    <br>
+            <input
+                type="date"
+                id="date"
+                name="date"
+                value="{{ today }}"
+                min="{{ today }}"
+                max="{{ max_date }}"
+                required
+            >
 
-    <button type="submit">Κλείσε Ραντεβού</button>
+            <div class="section-title">⏰ Διάλεξε ώρα</div>
 
-</form>
+            <div class="slots" id="slots"></div>
+
+            <input type="hidden" name="time" id="timeInput" required>
+
+            <button type="submit" class="book-btn">
+                Κλείσε Ραντεβού
+            </button>
+
+        </form>
+
+        <div class="info">
+            <div class="info-box">
+                <h3>📍 Location</h3>
+                <p>Larisa</p>
+            </div>
+
+            <div class="info-box">
+                <h3>⭐ Rating</h3>
+                <p>5.0</p>
+            </div>
+
+            <div class="info-box">
+                <h3>⏱ Duration</h3>
+                <p>45 λεπτά</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
 <script>
 
@@ -128,7 +264,6 @@ function selectTime(time, el){
 }
 
 
-// LOAD SLOTS
 function loadSlots(date){
 
     fetch("/slots?date=" + date)
@@ -139,18 +274,18 @@ function loadSlots(date){
 
         let container = document.getElementById("slots");
 
+        let selectedTime = document.getElementById("timeInput").value;
+
         container.innerHTML = "";
 
-        // ❌ no slots
         if(data.length === 0){
 
             container.innerHTML =
-            "<p>❌ Δεν υπάρχουν διαθέσιμες ώρες</p>";
+            '<div class="no-slots">❌ Δεν υπάρχουν διαθέσιμες ώρες</div>';
 
             return;
         }
 
-        // create buttons
         data.forEach(time => {
 
             let div = document.createElement("div");
@@ -158,6 +293,10 @@ function loadSlots(date){
             div.className = "slot";
 
             div.innerText = time;
+
+            if(time === selectedTime){
+                div.classList.add("selected");
+            }
 
             div.onclick = function(){
                 selectTime(time, div);
@@ -172,11 +311,12 @@ function loadSlots(date){
 
 
 // DATE CHANGE
+
 document.getElementById("date").addEventListener("input", function () {
 
     let selected = new Date(this.value);
 
-    // ❌ Κυριακή
+    // Κυριακή
     if (selected.getDay() === 0) {
 
         alert("❌ Τις Κυριακές είμαστε κλειστά");
@@ -203,60 +343,20 @@ window.onload = function(){
     }
 }
 
-</script>
 
-<script>
-
-// LIVE UPDATES (κάθε 5 sec)
+// LIVE UPDATES
 setInterval(function(){
 
     let date = document.getElementById("date").value;
 
     if(date){
-
-        fetch("/slots?date=" + date)
-        .then(res => res.json())
-        .then(data => {
-
-            let container = document.getElementById("slots");
-
-            // κρατάμε το selected time
-            let selectedTime = document.getElementById("timeInput").value;
-
-            container.innerHTML = "";
-
-            if(data.length === 0){
-                container.innerHTML = "<p>❌ Δεν υπάρχουν διαθέσιμες ώρες</p>";
-                return;
-            }
-
-            data.forEach(time => {
-
-                let div = document.createElement("div");
-
-                div.className = "slot";
-
-                div.innerText = time;
-
-                // αν είναι ήδη selected → κράτα το highlight
-                if(time === selectedTime){
-                    div.classList.add("selected");
-                }
-
-                div.onclick = function(){
-                    selectTime(time, div);
-                };
-
-                container.appendChild(div);
-            });
-
-        });
-
+        loadSlots(date);
     }
 
-}, 5000);
+},5000);
 
 </script>
-    
+
 </body>
 </html>
+```
