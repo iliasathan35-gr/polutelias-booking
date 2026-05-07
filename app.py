@@ -139,7 +139,7 @@ def index():
         # 🔔 TELEGRAM NOTIFICATION
         send_telegram(
             f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
-            f"Όνομα: {name}\n"
+            f"Ονοματεπώνυμο: {name}\n"
             f"Τηλ: {phone}\n"
             f"Υπηρεσία: {service}\n"
             f"Ώρα: {date} {time}"
