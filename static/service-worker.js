@@ -1,34 +1,25 @@
 const CACHE_NAME = "polutelias-v1";
 
-const urlsToCache = [
-    "/",
-];
-
 self.addEventListener("install", event => {
-
-    event.waitUntil(
-
-        caches.open(CACHE_NAME)
-
-        .then(cache => {
-
-            return cache.addAll(urlsToCache);
-
-        })
-    );
+    self.skipWaiting();
 });
 
+self.addEventListener("activate", event => {
+    event.waitUntil(self.clients.claim());
+});
 
-self.addEventListener("fetch", event => {
+self.addEventListener("push", function(event) {
+    let data = {};
 
-    event.respondWith(
+    if (event.data) {
+        data = event.data.json();
+    }
 
-        caches.match(event.request)
-
-        .then(response => {
-
-            return response || fetch(event.request);
-
+    event.waitUntil(
+        self.registration.showNotification(data.title || "Polutelias 💈", {
+            body: data.body || "Νέα ειδοποίηση",
+            icon: "/static/icon-192.png",
+            badge: "/static/icon-192.png"
         })
     );
 });
