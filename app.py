@@ -473,10 +473,15 @@ def check_reminders():
     if changed:
         save(data)
 
+try:
+    from apscheduler.schedulers.background import BackgroundScheduler
 
-scheduler = BackgroundScheduler()
-scheduler.add_job(check_reminders, "interval", minutes=1)
-scheduler.start()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(check_reminders, "interval", minutes=1)
+    scheduler.start()
+
+except Exception as e:
+    print("Scheduler error:", e)
 
             phone = d.get("phone")
 
