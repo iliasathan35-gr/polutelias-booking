@@ -484,5 +484,56 @@ try:
 except Exception as e:
     print("Scheduler error:", e)
 
+ADMIN_PUSH_FILE = "admin_push_subscriptions.json"
+
+
+def load_admin_push_subscriptions():
+    try:
+        with open(ADMIN_PUSH_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return []
+
+
+def save_admin_push_subscriptions(data):
+    with open(ADMIN_PUSH_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+@app.route("/admin/subscribe", methods=["POST"])
+def admin_subscribe():
+    if not session.get("admin"):
+        return {"success": False}
+
+    sub = request.get_json()
+
+    subs = load_admin_push_subscriptions()
+
+    if sub not in subs:
+        subs.append(sub)
+        save_admin_push_subscriptions(subs)
+
+    return {"success": True}
+
+
+def send_push_to_admins(title, body):
+    subs = load_admin_push_subscriptions()
+
+    for sub in subs:
+        try:
+            webpush(
+                subscription_info=sub,
+                data=json.dumps({
+                    "title": title,
+                    "body": body
+                }),
+                vapid_private_key=os.environ.get("VAPID_PRIVATE_KEY"),
+                vapid_claims={
+                    "sub": os.environ.get("VAPID_EMAIL")
+                }
+            )
+        except Exception as e:
+            print("Admin push error:", e)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
