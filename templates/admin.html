@@ -311,61 +311,61 @@ select{
 </div>
 
 <script>
+
 function toggle(id){
 
     let box = document.getElementById("box"+id);
 
+    let openBoxes =
+        JSON.parse(
+            localStorage.getItem("openBoxes") || "[]"
+        );
+
     if(box.style.display === "block"){
+
         box.style.display = "none";
+
+        openBoxes =
+            openBoxes.filter(x => x != id);
+
     } else {
+
         box.style.display = "block";
+
+        if(!openBoxes.includes(id)){
+            openBoxes.push(id);
+        }
+
     }
+
+    localStorage.setItem(
+        "openBoxes",
+        JSON.stringify(openBoxes)
+    );
 }
 
 
-// LIVE UPDATE ΧΩΡΙΣ ΝΑ ΚΛΕΙΝΟΥΝ ΟΙ ΜΕΡΕΣ
-setInterval(function(){
+// ΕΠΑΝΑΦΟΡΑ ΑΝΟΙΧΤΩΝ ΜΕΡΩΝ
+window.addEventListener("load", () => {
 
-    const active = document.activeElement;
+    let openBoxes =
+        JSON.parse(
+            localStorage.getItem("openBoxes") || "[]"
+        );
 
-    if(active && (active.tagName === "INPUT" || active.tagName === "SELECT")){
-        return;
-    }
+    openBoxes.forEach(id => {
 
-    let openBoxes = [];
+        let box =
+            document.getElementById("box"+id);
 
-    document.querySelectorAll(".box").forEach(box => {
-        if(box.style.display === "block"){
-            openBoxes.push(box.id);
+        if(box){
+            box.style.display = "block";
         }
+
     });
 
-    fetch(window.location.href)
-        .then(res => res.text())
-        .then(html => {
+});
 
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(html, "text/html");
-
-            document.body.innerHTML = doc.body.innerHTML;
-
-            openBoxes.forEach(id => {
-                let box = document.getElementById(id);
-                if(box){
-                    box.style.display = "block";
-                }
-            });
-
-        });
-
-}, 7000);
-
-
-// PWA
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/static/service-worker.js")
-    .then(() => console.log("Admin PWA Ready"));
-}
 </script>
 
 <script>
