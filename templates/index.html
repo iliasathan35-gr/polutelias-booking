@@ -567,6 +567,87 @@ await fetch("/subscribe", {
 alert("Οι ειδοποιήσεις ενεργοποιήθηκαν ✅");
 }
 </script>
+
+<script>
+
+function urlBase64ToUint8Array(base64String) {
+
+    const padding = "=".repeat((4 - base64String.length % 4) % 4);
+
+    const base64 = (base64String + padding)
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+    const rawData = window.atob(base64);
+
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+
+    return outputArray;
+}
+
+
+async function handleBooking(event){
+
+    event.preventDefault();
+
+    try {
+
+        if ("serviceWorker" in navigator) {
+
+            const permission = await Notification.requestPermission();
+
+            if(permission === "granted"){
+
+                const reg = await navigator.serviceWorker.register(
+                    "/static/service-worker.js"
+                );
+
+                const keyRes = await fetch("/vapid-public-key");
+
+                const keyData = await keyRes.json();
+
+                const sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey:
+                        urlBase64ToUint8Array(keyData.publicKey)
+                });
+
+                const phone =
+                    document.querySelector(
+                        "input[name='phone']"
+                    ).value;
+
+                await fetch("/subscribe", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        phone: phone,
+                        subscription: sub
+                    }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+            }
+
+        }
+
+    } catch(err){
+
+        console.log(err);
+
+    }
+
+    event.target.submit();
+
+    return false;
+}
+
+</script>
     
 </body>
 </html>
