@@ -417,12 +417,16 @@ def check_reminders():
 
         time_left = appointment_time - now
 
-        def send_push_to_phone(phone, title, body):
+def send_push_to_phone(phone, title, body):
+
     subs = load_push_subscriptions()
 
     for item in subs:
+
         if item.get("phone") == phone:
+
             try:
+
                 webpush(
                     subscription_info=item["subscription"],
                     data=json.dumps({
@@ -434,9 +438,10 @@ def check_reminders():
                         "sub": os.environ.get("VAPID_EMAIL")
                     }
                 )
-            except Exception as e:
-                print("Push error:", e)
 
+            except Exception as e:
+
+                print("Push error:", e)
 
 def check_reminders():
     data = load()
