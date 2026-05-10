@@ -610,7 +610,7 @@ def unblock_day(date):
     return redirect("/admin")
 
 
-@app.route("/admin/block-slot/<date>/<time>")
+@app.route("/admin/block-slot/<date>/<path:time>")
 def block_slot(date, time):
     if not session.get("admin"):
         return redirect("/login")
@@ -630,7 +630,7 @@ def block_slot(date, time):
     return redirect("/admin")
 
 
-@app.route("/admin/unblock-slot/<date>/<time>")
+@app.route("/admin/unblock-slot/<date>/<path:time>")
 def unblock_slot(date, time):
     if not session.get("admin"):
         return redirect("/login")
