@@ -233,6 +233,7 @@ def admin():
         return redirect("/login")
 
     data = load()
+    blocked = load_blocked()
     today = datetime.now()
     days = []
 
