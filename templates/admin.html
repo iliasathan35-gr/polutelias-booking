@@ -251,25 +251,21 @@ select{
 
     {% for s in day.slots %}
 
-            <div class="slot
-
+           <div class="slot
 {% if s.blocked %}
-    blocked-slot
+blocked-slot
 {% elif s.booking %}
 
     {% if s.booking.service == 'Κούρεμα' %}
         service-haircut
-
     {% elif s.booking.service == 'Μούσι' %}
         service-beard
-
     {% elif s.booking.service == 'Κούρεμα + Μούσι' %}
         service-combo
-
     {% endif %}
 
 {% else %}
-    free
+free
 {% endif %}
 ">
 
