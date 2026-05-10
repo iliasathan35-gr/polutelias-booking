@@ -85,9 +85,20 @@ def slots_api():
         if d["time"].startswith(date):
             booked.append(d["time"].split(" ")[1])
 
-    available = [s for s in slots if s not in booked]
+    blocked = load_blocked()
 
-    return jsonify(available)
+if date in blocked["days"]:
+    return jsonify([])
+
+blocked_slots = [
+    b["time"] for b in blocked["slots"]
+    if b["date"] == date
+]
+
+available = [
+    s for s in slots
+    if s not in booked and s not in blocked_slots
+]
 
 
 # ---------------- HOME ----------------
