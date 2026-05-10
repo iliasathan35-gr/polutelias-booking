@@ -269,10 +269,20 @@ def admin():
                     booking["index"] = idx
                     break
 
+            is_blocked = False
+
+if date_str in blocked["days"]:
+    is_blocked = True
+
+for b in blocked["slots"]:
+    if b["date"] == date_str and b["time"] == s:
+        is_blocked = True
+
             day_slots.append({
-                "time": s,
-                "booking": booking
-            })
+    "time": s,
+    "booking": booking,
+    "blocked": is_blocked
+})
 
         days.append({
             "date": formatted_date,
