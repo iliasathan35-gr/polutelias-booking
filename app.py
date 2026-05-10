@@ -58,29 +58,6 @@ def send_telegram(text):
 
 
 # ---------------- SLOTS ----------------
-def generate_slots(day):
-    if day == 6:
-        return []
-
-    slots = []
-
-    if day == 5:
-        start = datetime(2000, 1, 1, 10, 0)
-        end = datetime(2000, 1, 1, 14, 0)
-    else:
-        start = datetime(2000, 1, 1, 11, 0)
-        end = datetime(2000, 1, 1, 20, 0)
-
-    while start <= end:
-        slots.append(start.strftime("%H:%M"))
-        start += timedelta(minutes=45)
-
-    return slots
-
-
-SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
-from flask import jsonify
-
 @app.route("/slots")
 def slots_api():
     date = request.args.get("date")
@@ -104,18 +81,20 @@ def slots_api():
 
     blocked = load_blocked()
 
-if date in blocked["days"]:
-    return jsonify([])
+    if date in blocked["days"]:
+        return jsonify([])
 
-blocked_slots = [
-    b["time"] for b in blocked["slots"]
-    if b["date"] == date
-]
+    blocked_slots = [
+        b["time"] for b in blocked["slots"]
+        if b["date"] == date
+    ]
 
-available = [
-    s for s in slots
-    if s not in booked and s not in blocked_slots
-]
+    available = [
+        s for s in slots
+        if s not in booked and s not in blocked_slots
+    ]
+
+    return jsonify(available)
 
 
 # ---------------- HOME ----------------
