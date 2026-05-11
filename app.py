@@ -10,9 +10,8 @@ import os
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-conn = psycopg2.connect(DATABASE_URL)
-
-cur = conn.cursor()
+def get_db():
+    return psycopg2.connect(DATABASE_URL)
 
 cur.execute("""
 CREATE TABLE IF NOT EXISTS appointments (
