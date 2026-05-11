@@ -225,7 +225,10 @@ def index():
             except:
                 pass
 
-                cur.execute("""
+                      conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
             INSERT INTO appointments
             (name, phone, service, time)
             VALUES (%s, %s, %s, %s)
@@ -237,6 +240,8 @@ def index():
         ))
 
         conn.commit()
+        cur.close()
+        conn.close()
 
         send_push_to_admins(
             "💈 Νέο ραντεβού",
