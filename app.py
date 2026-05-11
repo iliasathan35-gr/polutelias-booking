@@ -35,6 +35,8 @@ DATA_FILE = "data.json"
 
 # ---------------- DATA ----------------
 def load():
+    conn = get_db()
+    cur = conn.cursor()
 
     cur.execute("""
         SELECT name, phone, service, time
@@ -43,16 +45,20 @@ def load():
 
     rows = cur.fetchall()
 
+    cur.close()
+    conn.close()
+
     data = []
 
     for row in rows:
-
         data.append({
             "name": row[0],
             "phone": row[1],
             "service": row[2],
             "time": row[3]
         })
+
+    return data
 
     return data
 
