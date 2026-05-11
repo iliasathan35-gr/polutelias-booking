@@ -735,19 +735,19 @@ function getDateFromVoice(text){
 
 function getTimeFromVoice(text){
 
-text = text
-    .replace("μία", "1")
-    .replace("μια", "1")
-    .replace("δύο", "2")
-    .replace("τρία", "3")
-    .replace("τέσσερα", "4")
-    .replace("πέντε", "5")
-    .replace("έξι", "6")
-    .replace("επτά", "7")
-    .replace("εφτά", "7")
-    .replace("οκτώ", "8")
-    .replace("εννιά", "9")
-    .replace("δέκα", "10");
+    text = text
+        .replace("μία", "1")
+        .replace("μια", "1")
+        .replace("δύο", "2")
+        .replace("τρία", "3")
+        .replace("τέσσερα", "4")
+        .replace("πέντε", "5")
+        .replace("έξι", "6")
+        .replace("επτά", "7")
+        .replace("εφτά", "7")
+        .replace("οκτώ", "8")
+        .replace("εννιά", "9")
+        .replace("δέκα", "10");
     
     let match =
         text.match(/(\d{1,2})([:.](\d{2}))?/);
