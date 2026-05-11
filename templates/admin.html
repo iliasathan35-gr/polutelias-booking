@@ -205,13 +205,17 @@ select{
 
     <div class="top">
         <h1>💈 Admin Panel</h1>
-        <button type="button" onclick="enableAdminNotifications()" class="btn add-btn">
+       <button type="button" onclick="enableAdminNotifications()" class="btn add-btn">
     🔔 Ενεργοποίηση Admin Ειδοποιήσεων
 </button>
-        <p>Manage bookings like a native app</p>
-    </div>
 
-    {% for day in days %}
+<button type="button" onclick="startVoiceAssistant()" class="btn edit-btn" style="margin-top:10px;">
+    🎤 Voice Booking
+</button>
+
+<input id="voiceText" placeholder="Πες: Γιάννης 6971234567 αύριο 5 κούρεμα">
+
+<p>Manage bookings like a native app</p>
 
     <div class="day">
 
