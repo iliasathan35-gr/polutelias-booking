@@ -13,23 +13,6 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 def get_db():
     return psycopg2.connect(DATABASE_URL)
 
-conn = get_db()
-cur = conn.cursor()
-
-cur.execute("""
-    INSERT INTO appointments
-    (name, phone, service, time)
-    VALUES (%s, %s, %s, %s)
-""", (
-    name,
-    phone,
-    service,
-    f"{date} {time}"
-))
-
-conn.commit()
-cur.close()
-conn.close()
 
 app = Flask(__name__)
 import os
