@@ -120,7 +120,7 @@ def generate_slots(day):
 SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
 
 # ---------------- HOME ----------------
