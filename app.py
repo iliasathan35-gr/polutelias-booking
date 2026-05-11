@@ -232,17 +232,17 @@ def index():
                 pass
 
         cur.execute("""
-    INSERT INTO appointments
-    (name, phone, service, time)
-    VALUES (%s, %s, %s, %s)
-""", (
-    name,
-    phone,
-    service,
-    f"{date} {time}"
-))
+        INSERT INTO appointments
+        (name, phone, service, time)
+        VALUES (%s, %s, %s, %s)
+    """, (
+        name,
+        phone,
+        service,
+        f"{date} {time}"
+    ))
 
-conn.commit()
+    conn.commit()
 
         send_push_to_admins(
             "💈 Νέο ραντεβού",
