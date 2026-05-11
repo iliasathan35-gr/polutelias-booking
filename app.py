@@ -231,14 +231,18 @@ def index():
             except:
                 pass
 
-        data.append({
-            "name": name,
-            "phone": phone,
-            "service": service,
-            "time": f"{date} {time}"
-        })
+        cur.execute("""
+    INSERT INTO appointments
+    (name, phone, service, time)
+    VALUES (%s, %s, %s, %s)
+""", (
+    name,
+    phone,
+    service,
+    f"{date} {time}"
+))
 
-        save(data)
+conn.commit()
 
         send_push_to_admins(
             "💈 Νέο ραντεβού",
