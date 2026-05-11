@@ -171,11 +171,9 @@ SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
 # ---------------- HOME ----------------
 @app.route("/", methods=["GET", "POST"])
 def index():
-
     data = load()
 
     if request.method == "POST":
-
         name = request.form.get("name")
         phone = request.form.get("phone")
         service = request.form.get("service")
@@ -186,11 +184,7 @@ def index():
             return "❌ Συμπλήρωσε όλα τα πεδία"
 
         try:
-            dt = datetime.strptime(
-                f"{date} {time}",
-                "%Y-%m-%d %H:%M"
-            )
-
+            dt = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
         except:
             return "❌ Λάθος ημερομηνία/ώρα"
 
@@ -206,24 +200,14 @@ def index():
             return "❌ Πολύ κοντά"
 
         for d in data:
-
             try:
-
-                existing = datetime.strptime(
-                    d["time"],
-                    "%Y-%m-%d %H:%M"
-                )
-
-                if abs(
-                    (existing - dt).total_seconds()
-                ) < 2700:
-
+                existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
+                if abs((existing - dt).total_seconds()) < 2700:
                     return "❌ Ώρα κατειλημμένη"
-
             except:
                 pass
 
-                      conn = get_db()
+        conn = get_db()
         cur = conn.cursor()
 
         cur.execute("""
@@ -254,30 +238,11 @@ def index():
             f"Ώρα: {date} {time}"
         )
 
-        return redirect("/success")       
-
-        send_push_to_admins(
-            "💈 Νέο ραντεβού",
-            f"{name} - {service} - {date} {time}"
-        )
-
-        send_telegram(
-            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
-            f"Ονοματεπώνυμο: {name}\n"
-            f"Τηλ: {phone}\n"
-            f"Υπηρεσία: {service}\n"
-            f"Ώρα: {date} {time}"
-        )
-
         return redirect("/success")
 
     today_dt = datetime.now()
-
     today = today_dt.strftime("%Y-%m-%d")
-
-    max_date = (
-        today_dt + timedelta(days=7)
-    ).strftime("%Y-%m-%d")
+    max_date = (today_dt + timedelta(days=7)).strftime("%Y-%m-%d")
 
     return render_template(
         "index.html",
