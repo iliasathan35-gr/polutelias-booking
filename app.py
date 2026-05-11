@@ -256,6 +256,21 @@ def index():
             f"Ώρα: {date} {time}"
         )
 
+        return redirect("/success")       
+
+        send_push_to_admins(
+            "💈 Νέο ραντεβού",
+            f"{name} - {service} - {date} {time}"
+        )
+
+        send_telegram(
+            f"💈 ΝΕΟ ΡΑΝΤΕΒΟΥ!\n"
+            f"Ονοματεπώνυμο: {name}\n"
+            f"Τηλ: {phone}\n"
+            f"Υπηρεσία: {service}\n"
+            f"Ώρα: {date} {time}"
+        )
+
         return redirect("/success")
 
     today_dt = datetime.now()
