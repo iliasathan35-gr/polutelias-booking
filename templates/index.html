@@ -795,22 +795,39 @@ async function applyVoiceBooking(text){
                 document.querySelectorAll(".slot")
             );
 
-       const wanted = slots.find(s => {
+      let wanted = slots.find(s => {
 
     const slotTime = s.innerText.trim();
 
-    if(slotTime === time){
-        return true;
-    }
-
-    const slotHour =
-        parseInt(slotTime.split(":")[0]);
-
-    const wantedHour =
-        parseInt(time.split(":")[0]);
-
-    return slotHour === wantedHour;
+    return slotTime === time;
 });
+
+// αν δεν βρεθεί ακριβώς
+if(!wanted){
+
+    wanted = slots.find(s => {
+
+        const slotHour =
+            parseInt(
+                s.innerText.trim().split(":")[0]
+            );
+
+        const wantedHour =
+            parseInt(
+                time.split(":")[0]
+            );
+
+        return slotHour === wantedHour;
+    });
+
+}
+
+// αν πάλι δεν βρεθεί
+if(!wanted && slots.length > 0){
+
+    wanted = slots[0];
+
+}
 
         if(wanted){
 
