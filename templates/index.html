@@ -785,10 +785,22 @@ async function applyVoiceBooking(text){
                 document.querySelectorAll(".slot")
             );
 
-        const wanted =
-            slots.find(
-                s => s.innerText.trim() === time
-            );
+       const wanted = slots.find(s => {
+
+    const slotTime = s.innerText.trim();
+
+    if(slotTime === time){
+        return true;
+    }
+
+    const slotHour =
+        parseInt(slotTime.split(":")[0]);
+
+    const wantedHour =
+        parseInt(time.split(":")[0]);
+
+    return slotHour === wantedHour;
+});
 
         if(wanted){
 
