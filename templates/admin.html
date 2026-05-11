@@ -493,6 +493,37 @@ async function enableAdminNotifications() {
 }
 
 </script>
+
+<script>
+function speak(text){
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = "el-GR";
+    window.speechSynthesis.speak(msg);
+}
+
+function startVoiceAssistant(){
+    const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if(!SpeechRecognition){
+        alert("Δεν υποστηρίζεται φωνητική αναγνώριση σε αυτόν τον browser.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "el-GR";
+    recognition.interimResults = false;
+
+    recognition.onresult = async function(event){
+        const text = event.results[0][0].transcript;
+        document.getElementById("voiceText").value = text;
+
+        speak("Άκουσα " + text);
+    };
+
+    recognition.start();
+}
+</script>
     
 </body>
 </html>
