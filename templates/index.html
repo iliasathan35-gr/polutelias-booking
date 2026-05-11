@@ -748,8 +748,16 @@ function getTimeFromVoice(text){
         match[3] ? match[3] : "00";
 
     if(hour >= 1 && hour <= 9){
-        hour += 12;
-    }
+
+    // barber ώρες = απόγευμα
+    hour += 12;
+
+}
+
+// ειδικά για 12
+if(hour === 12){
+    hour = 12;
+}
 
     return String(hour).padStart(2,"0")
         + ":" + minute;
