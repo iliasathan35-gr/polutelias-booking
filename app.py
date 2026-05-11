@@ -120,17 +120,11 @@ def generate_slots(day):
 SERVICES = ["Κούρεμα", "Μούσι", "Κούρεμα + Μούσι"]
 
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-
-    return render_template(
-        "index.html",
-        services=SERVICES
-    )
 
 # ---------------- HOME ----------------
 @app.route("/", methods=["GET", "POST"])
 def index():
+
     data = load()
 
     if request.method == "POST":
@@ -145,7 +139,11 @@ def index():
             return "❌ Συμπλήρωσε όλα τα πεδία"
 
         try:
-            dt = datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M")
+            dt = datetime.strptime(
+                f"{date} {time}",
+                "%Y-%m-%d %H:%M"
+            )
+
         except:
             return "❌ Λάθος ημερομηνία/ώρα"
 
@@ -161,10 +159,20 @@ def index():
             return "❌ Πολύ κοντά"
 
         for d in data:
+
             try:
-                existing = datetime.strptime(d["time"], "%Y-%m-%d %H:%M")
-                if abs((existing - dt).total_seconds()) < 2700:
+
+                existing = datetime.strptime(
+                    d["time"],
+                    "%Y-%m-%d %H:%M"
+                )
+
+                if abs(
+                    (existing - dt).total_seconds()
+                ) < 2700:
+
                     return "❌ Ώρα κατειλημμένη"
+
             except:
                 pass
 
@@ -177,10 +185,29 @@ def index():
         })
 
         save(data)
+
         send_push_to_admins(
-    "💈 Νέο ραντεβού",
-    f"{name} - {service} - {date} {time}"
-)
+            "💈 Νέο ραντεβού",
+            f"{name} - {service} - {date} {time}"
+        )
+
+        return redirect("/success")
+
+    # GET
+    today_dt = datetime.now()
+
+    today = today_dt.strftime("%Y-%m-%d")
+
+    max_date = (
+        today_dt + timedelta(days=7)
+    ).strftime("%Y-%m-%d")
+
+    return render_template(
+        "index.html",
+        services=SERVICES,
+        today=today,
+        max_date=max_date
+    )
         
         # 🔔 TELEGRAM NOTIFICATION
         send_telegram(
