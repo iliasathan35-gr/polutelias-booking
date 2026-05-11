@@ -5,6 +5,8 @@ import uuid
 import requests
 import os
 from pywebpush import webpush
+import psycopg2
+import os
 
 app = Flask(__name__)
 import os
