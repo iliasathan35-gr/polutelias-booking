@@ -793,18 +793,20 @@ async function applyVoiceBooking(text){
 
         if(wanted){
 
-            selectTime(
-                wanted.innerText.trim(),
-                wanted
-            );
+    alert("MILAWWWWW");
 
-            customerSpeak(
-                "Βρήκα διαθέσιμη ώρα στις " +
-                wanted.innerText.trim()
-            );
+    customerSpeak(
+        "Βρήκα διαθέσιμη ώρα στις " +
+        wanted.innerText.trim()
+    );
 
-            return;
-        }
+    selectTime(
+        wanted.innerText.trim(),
+        wanted
+    );
+
+    return;
+}
 
         if(slots.length > 0){
 
