@@ -1028,5 +1028,62 @@ def admin_stats():
         top_visits=top_visits
     )
 
+# ---------------- CUSTOMER PROFILE ----------------
+@app.route("/admin/customer/<phone>")
+def admin_customer_profile(phone):
+
+    if not session.get("admin"):
+        return redirect("/login")
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    # ραντεβού πελάτη
+    cur.execute("""
+        SELECT service, time
+        FROM appointments
+        WHERE phone=%s
+        ORDER BY time DESC
+    """, (phone,))
+
+    appointments = cur.fetchall()
+
+    # notes
+    cur.execute("""
+        SELECT note
+        FROM customer_notes
+        WHERE customer_phone=%s
+        ORDER BY id DESC
+    """, (phone,))
+
+    notes = [x[0] for x in cur.fetchall()]
+
+    customer_name = "-"
+
+    if appointments:
+
+        cur.execute("""
+            SELECT name
+            FROM appointments
+            WHERE phone=%s
+            LIMIT 1
+        """, (phone,))
+
+        row = cur.fetchone()
+
+        if row:
+            customer_name = row[0]
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "customer_profile.html",
+        customer_name=customer_name,
+        phone=phone,
+        appointments=appointments,
+        notes=notes
+    )
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
