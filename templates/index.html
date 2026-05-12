@@ -314,7 +314,12 @@ select:focus{
             </div>
 
             <div class="section">
-                <input name="phone" placeholder="Τηλέφωνο" required>
+                <input
+    name="phone"
+    placeholder="Τηλέφωνο"
+    value="{{ customer_phone or '' }}"
+    required
+>
             </div>
 
             <div class="section">
