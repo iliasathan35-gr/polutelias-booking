@@ -777,7 +777,7 @@ def customer_register():
         session["customer_name"] = name
         session["customer_phone"] = phone
 
-        return redirect("/")
+        return redirect("/?enable_notifications=1")
 
     return render_template("customer_register.html")
 
@@ -818,7 +818,7 @@ def customer_login():
         session["customer_name"] = user[1]
         session["customer_phone"] = user[2]
 
-        return redirect("/")
+        return redirect("/?enable_notifications=1")
 
     return render_template("customer_login.html")
 
