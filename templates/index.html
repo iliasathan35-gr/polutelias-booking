@@ -813,20 +813,43 @@ async function applyVoiceBooking(text){
 
         if(slots.length > 0){
 
-            let availableTimes = slots
-                .slice(0,3)
-                .map(s => s.innerText.trim())
-                .join(", ");
+    const wantedMinutes =
+        parseInt(time.split(":")[0]) * 60
+        + parseInt(time.split(":")[1]);
 
-            customerSpeak(
-                "Η ώρα " + time +
-                " δεν είναι διαθέσιμη. " +
-                "Κοντινές διαθέσιμες ώρες είναι " +
-                availableTimes
-            );
+    let closest = slots
+        .map(s => {
 
-            return;
-        }
+            const t = s.innerText.trim();
+
+            const mins =
+                parseInt(t.split(":")[0]) * 60
+                + parseInt(t.split(":")[1]);
+
+            return {
+                time: t,
+                diff: Math.abs(mins - wantedMinutes)
+            };
+
+        })
+
+        .sort((a,b) => a.diff - b.diff)
+
+        .slice(0,3)
+
+        .map(x => x.time)
+
+        .join(", ");
+
+    customerSpeak(
+        "Η ώρα " + time +
+        " δεν είναι διαθέσιμη. " +
+        "Οι πιο κοντινές διαθέσιμες ώρες είναι " +
+        closest
+    );
+
+    return;
+}
 
         customerSpeak(
             "Δεν υπάρχουν διαθέσιμες ώρες"
