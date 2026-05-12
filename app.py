@@ -777,6 +777,7 @@ def customer_register():
         session["customer_name"] = name
         session["customer_phone"] = phone
 
+        # μετά το register
         return redirect("/?enable_notifications=1")
 
     return render_template("customer_register.html")
@@ -818,6 +819,7 @@ def customer_login():
         session["customer_name"] = user[1]
         session["customer_phone"] = user[2]
 
+        # μετά το login
         return redirect("/?enable_notifications=1")
 
     return render_template("customer_login.html")
