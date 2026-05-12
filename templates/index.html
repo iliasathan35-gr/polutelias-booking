@@ -685,6 +685,16 @@ localStorage.setItem(
         "input[name='phone']"
     ).value
 );
+
+    localStorage.setItem(
+    "customerName",
+    document.querySelector("input[name='name']").value
+);
+
+localStorage.setItem(
+    "customerPhone",
+    document.querySelector("input[name='phone']").value
+);
     
     event.target.submit();
 
