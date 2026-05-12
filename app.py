@@ -959,6 +959,74 @@ def admin_customers():
         "customers.html",
         customers=customers
     )
-    
+
+# ---------------- STATS ----------------
+@app.route("/admin/stats")
+def admin_stats():
+
+    if not session.get("admin"):
+        return redirect("/login")
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    # συνολικά
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM appointments
+    """)
+
+    total_appointments = cur.fetchone()[0]
+
+    # σήμερα
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM appointments
+        WHERE time LIKE %s
+    """, (f"{today}%",))
+
+    today_appointments = cur.fetchone()[0]
+
+    # δημοφιλέστερη υπηρεσία
+    cur.execute("""
+        SELECT service, COUNT(*) as c
+        FROM appointments
+        GROUP BY service
+        ORDER BY c DESC
+        LIMIT 1
+    """)
+
+    fav = cur.fetchone()
+
+    favorite_service = fav[0] if fav else "-"
+
+    # top πελάτης
+    cur.execute("""
+        SELECT name, COUNT(*) as c
+        FROM appointments
+        GROUP BY name
+        ORDER BY c DESC
+        LIMIT 1
+    """)
+
+    top = cur.fetchone()
+
+    top_customer = top[0] if top else "-"
+    top_visits = top[1] if top else 0
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "stats.html",
+        total_appointments=total_appointments,
+        today_appointments=today_appointments,
+        favorite_service=favorite_service,
+        top_customer=top_customer,
+        top_visits=top_visits
+    )
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
