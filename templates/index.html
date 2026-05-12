@@ -795,6 +795,8 @@ async function applyVoiceBooking(text){
 
     const time = getTimeFromVoice(text);
 
+    alert("DATE: " + date + " TIME: " + time);
+    
     document.getElementById("date").value = date;
 
     await loadSlots(date);
