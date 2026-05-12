@@ -757,6 +757,48 @@ function getDateFromVoice(text){
 
     // ημερομηνίες τύπου 15/5 ή 15-5
     else {
+        const greekMonths = {
+    "ιανουαρίου": 0,
+    "φεβρουαρίου": 1,
+    "μαρτίου": 2,
+    "απριλίου": 3,
+    "μαΐου": 4,
+    "μαιου": 4,
+    "ιουνίου": 5,
+    "ιουλίου": 6,
+    "αυγούστου": 7,
+    "αυγουστου": 7,
+    "σεπτεμβρίου": 8,
+    "οκτωβρίου": 9,
+    "νοεμβρίου": 10,
+    "δεκεμβρίου": 11
+};
+
+for(const monthName in greekMonths){
+
+    if(text.includes(monthName)){
+
+        const dayMatch = text.match(/(\d{1,2})/);
+
+        if(dayMatch){
+
+            const day =
+                parseInt(dayMatch[1]);
+
+            const year =
+                today.getFullYear();
+
+            today.setFullYear(
+                year,
+                greekMonths[monthName],
+                day
+            );
+
+            break;
+        }
+    }
+}
+        
         const dateMatch = text.match(/(\d{1,2})[\/\-\.](\d{1,2})/);
 
         if(dateMatch){
