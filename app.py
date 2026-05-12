@@ -104,12 +104,17 @@ def slots_api():
 
     try:
         dt = datetime.strptime(date, "%Y-%m-%d")
-
     except:
         return jsonify([])
 
     # ❌ Κυριακή
     if dt.weekday() == 6:
+        return jsonify([])
+
+    blocked = load_blocked()
+
+    # ❌ blocked whole day
+    if date in blocked["days"]:
         return jsonify([])
 
     slots = generate_slots(dt.weekday())
@@ -124,30 +129,32 @@ def slots_api():
                 d["time"].split(" ")[1]
             )
 
-    blocked = load_blocked()
-
-    # ❌ blocked whole day
-    if date in blocked["days"]:
-        return jsonify([])
-
     blocked_slots = [
-
         b["time"]
-
         for b in blocked["slots"]
-
         if b["date"] == date
     ]
 
-    available = [
+    result = []
 
-        s for s in slots
+    for s in slots:
 
-        if s not in booked
-        and s not in blocked_slots
-    ]
+        # blocked ώρες να μη φαίνονται καθόλου
+        if s in blocked_slots:
+            continue
 
-    return jsonify(available)
+        if s in booked:
+            result.append({
+                "time": s,
+                "status": "booked"
+            })
+        else:
+            result.append({
+                "time": s,
+                "status": "free"
+            })
+
+    return jsonify(result)
 # ---------------- SLOTS ----------------
 def generate_slots(day):
     if day == 6:
