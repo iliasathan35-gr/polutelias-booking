@@ -658,38 +658,43 @@ async function handleBooking(event){
 </script>
 
 <script>
+
 function customerSpeak(text){
-    console.log("SPEAK:", text);
 
     window.speechSynthesis.cancel();
 
-    const msg = new SpeechSynthesisUtterance();
-    msg.text = text;
+    const msg = new SpeechSynthesisUtterance(text);
+
     msg.lang = "el-GR";
-    msg.volume = 1;
     msg.rate = 0.95;
-    msg.pitch = 1;
 
-    window.speechSynthesis.resume();
-
-    setTimeout(() => {
-        window.speechSynthesis.speak(msg);
-    }, 100);
+    window.speechSynthesis.speak(msg);
 }
 
+
 function setServiceFromVoice(text){
-    const service = document.querySelector("select[name='service']");
+
+    const service =
+        document.querySelector("select[name='service']");
 
     if(text.includes("κούρεμα") && text.includes("μούσι")){
+
         service.value = "Κούρεμα + Μούσι";
+
     } else if(text.includes("μούσι")){
+
         service.value = "Μούσι";
+
     } else if(text.includes("κούρεμα")){
+
         service.value = "Κούρεμα";
+
     }
 }
 
+
 function getDateFromVoice(text){
+
     const today = new Date();
 
     if(text.includes("αύριο")){
@@ -697,17 +702,28 @@ function getDateFromVoice(text){
     }
 
     const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
+
+    const mm =
+        String(today.getMonth()+1)
+        .padStart(2,"0");
+
+    const dd =
+        String(today.getDate())
+        .padStart(2,"0");
 
     return `${yyyy}-${mm}-${dd}`;
 }
 
+
 function getTimeFromVoice(text){
+
+    text = text.toLowerCase();
+
     text = text
         .replace("μία", "1")
         .replace("μια", "1")
         .replace("δύο", "2")
+        .replace("τρία", "3")
         .replace("τρία", "3")
         .replace("τέσσερα", "4")
         .replace("πέντε", "5")
@@ -718,48 +734,69 @@ function getTimeFromVoice(text){
         .replace("εννιά", "9")
         .replace("δέκα", "10");
 
-    let match = text.match(/(\d{1,2})([:.](\d{2}))?/);
+    let match =
+        text.match(/(\d{1,2})([:.](\d{2}))?/);
 
     if(!match){
         return null;
     }
 
     let hour = parseInt(match[1]);
-    let minute = match[3] ? match[3] : "00";
+
+    let minute =
+        match[3] ? match[3] : "00";
 
     if(hour >= 1 && hour <= 9){
         hour += 12;
     }
 
-    return String(hour).padStart(2, "0") + ":" + minute;
+    return String(hour).padStart(2,"0")
+        + ":" + minute;
 }
 
+
 async function applyVoiceBooking(text){
+
     text = text.toLowerCase();
 
     setServiceFromVoice(text);
 
     const date = getDateFromVoice(text);
+
     const time = getTimeFromVoice(text);
 
-    document.getElementById("date").value = date;
-
-    loadSlots(date);
-
     if(!time){
-        customerSpeak("Δεν κατάλαβα την ώρα.");
+
+        customerSpeak(
+            "Δεν κατάλαβα την ώρα"
+        );
+
         return;
     }
 
-    setTimeout(() => {
-        const slots = Array.from(document.querySelectorAll(".slot"));
+    document.getElementById("date").value = date;
 
-        const wanted = slots.find(
-            s => s.innerText.trim() === time
-        );
+    await loadSlots(date);
+
+    setTimeout(() => {
+
+        const slots =
+            Array.from(
+                document.querySelectorAll(".slot")
+            );
+
+        let wanted = slots.find(s => {
+
+            return s.innerText.trim() === time;
+
+        });
 
         if(wanted){
-            selectTime(wanted.innerText.trim(), wanted);
+
+            selectTime(
+                wanted.innerText.trim(),
+                wanted
+            );
 
             customerSpeak(
                 "Βρήκα διαθέσιμη ώρα στις " +
@@ -770,48 +807,79 @@ async function applyVoiceBooking(text){
         }
 
         if(slots.length > 0){
+
             let availableTimes = slots
-                .slice(0, 3)
+                .slice(0,3)
                 .map(s => s.innerText.trim())
                 .join(", ");
 
             customerSpeak(
                 "Η ώρα " + time +
-                " δεν είναι διαθέσιμη. Κοντινές διαθέσιμες ώρες είναι " +
+                " δεν είναι διαθέσιμη. " +
+                "Κοντινές διαθέσιμες ώρες είναι " +
                 availableTimes
             );
 
             return;
         }
 
-        customerSpeak("Δεν υπάρχουν διαθέσιμες ώρες για αυτή την ημέρα.");
-    }, 900);
+        customerSpeak(
+            "Δεν υπάρχουν διαθέσιμες ώρες"
+        );
+
+    }, 800);
+
 }
 
+
 function startCustomerVoice(){
+
     const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
+        window.SpeechRecognition
+        || window.webkitSpeechRecognition;
 
     if(!SpeechRecognition){
-        alert("Δεν υποστηρίζεται φωνητική αναγνώριση.");
+
+        alert(
+            "Δεν υποστηρίζεται voice recognition"
+        );
+
         return;
     }
 
-    const recognition = new SpeechRecognition();
+    const recognition =
+        new SpeechRecognition();
 
     recognition.lang = "el-GR";
+
     recognition.interimResults = false;
 
-    recognition.onresult = function(event){
-        const text = event.results[0][0].transcript;
+    recognition.maxAlternatives = 1;
 
-        document.getElementById("customerVoiceText").value = text;
+    recognition.onresult = function(event){
+
+        const text =
+            event.results[0][0].transcript;
+
+        document.getElementById(
+            "customerVoiceText"
+        ).value = text;
 
         applyVoiceBooking(text);
     };
 
+    recognition.onerror = function(e){
+
+        console.log(e);
+
+        customerSpeak(
+            "Υπήρξε πρόβλημα με το μικρόφωνο"
+        );
+    };
+
     recognition.start();
 }
+
 </script>
     
 </body>
