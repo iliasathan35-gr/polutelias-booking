@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    background:#0f0f0f;
+    color:white;
+    font-family:Arial;
+    padding:20px;
+}
+
+h1{
+    margin-bottom:25px;
+}
+
+.card{
+    background:#171717;
+    border-radius:24px;
+    padding:24px;
+    margin-bottom:18px;
+}
+
+.label{
+    color:#aaa;
+    margin-bottom:8px;
+}
+
+.value{
+    font-size:34px;
+    font-weight:bold;
+}
+
+.back{
+    display:inline-block;
+    margin-bottom:20px;
+    color:#00e676;
+    text-decoration:none;
+    font-size:18px;
+}
+
+</style>
+</head>
+<body>
+
+<a href="/admin" class="back">
+← Admin
+</a>
+
+<h1>📊 Statistics</h1>
+
+<div class="card">
+    <div class="label">
+        Συνολικά ραντεβού
+    </div>
+
+    <div class="value">
+        {{ total_appointments }}
+    </div>
+</div>
+
+<div class="card">
+    <div class="label">
+        Σημερινά ραντεβού
+    </div>
+
+    <div class="value">
+        {{ today_appointments }}
+    </div>
+</div>
+
+<div class="card">
+    <div class="label">
+        Δημοφιλέστερη υπηρεσία
+    </div>
+
+    <div class="value">
+        {{ favorite_service }}
+    </div>
+</div>
+
+<div class="card">
+    <div class="label">
+        Top πελάτης
+    </div>
+
+    <div class="value">
+        {{ top_customer }}
+    </div>
+
+    <div style="margin-top:10px;color:#aaa;">
+        {{ top_visits }} επισκέψεις
+    </div>
+</div>
+
+</body>
+</html>
