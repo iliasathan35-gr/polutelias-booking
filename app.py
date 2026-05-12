@@ -902,7 +902,19 @@ def admin_customers():
             ORDER BY time ASC
         """, (phone,))
 
-        dates = [x[0] for x in cur.fetchall()]
+        dates = []
+
+for x in cur.fetchall():
+
+    try:
+        dates.append(
+            datetime.strptime(
+                x[0],
+                "%Y-%m-%d %H:%M"
+            )
+        )
+    except:
+        pass
 
         avg_days = "-"
 
