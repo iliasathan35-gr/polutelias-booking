@@ -854,9 +854,16 @@ if(!wanted && slots.length > 0){
 
         } else {
 
-            customerSpeak(
-                "Η ώρα δεν είναι διαθέσιμη"
-            );
+            let availableTimes = slots
+    .map(s => s.innerText.trim())
+    .slice(0, 3)
+    .join(", ");
+
+customerSpeak(
+    "Η ώρα " + time +
+    " δεν είναι διαθέσιμη. Διαθέσιμες ώρες είναι " +
+    availableTimes
+);
 
         }
 
