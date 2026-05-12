@@ -291,7 +291,7 @@ def login():
     if request.method == "POST":
         if request.form.get("password") == "admin":
             session["admin"] = True
-            return redirect("/admin")
+            return redirect("/admin?enable_notifications=1")
         return "❌ Λάθος password"
 
     return render_template("login.html")
