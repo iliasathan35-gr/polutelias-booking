@@ -1060,6 +1060,32 @@ function startCustomerVoice(){
     recognition.start();
 }
 </script>
+
+    {% if request.args.get("enable_notifications") %}
+
+<script>
+
+window.addEventListener("load", async () => {
+
+    try{
+
+        if(Notification.permission !== "granted"){
+
+            await enableNotifications();
+
+        }
+
+    } catch(err){
+
+        console.log(err);
+
+    }
+
+});
+
+</script>
+
+{% endif %}
     
 </body>
 </html>
