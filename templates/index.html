@@ -659,8 +659,14 @@ async function handleBooking(event){
 
 <script>
 function customerSpeak(text){
+
+    window.speechSynthesis.cancel();
+
     const msg = new SpeechSynthesisUtterance(text);
+
     msg.lang = "el-GR";
+    msg.rate = 0.95;
+
     window.speechSynthesis.speak(msg);
 }
 
