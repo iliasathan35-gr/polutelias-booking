@@ -845,27 +845,29 @@ if(!wanted && slots.length > 0){
 
         if(wanted){
 
-            selectTime(time, wanted);
+    selectTime(
+        wanted.innerText.trim(),
+        wanted
+    );
 
-            customerSpeak(
-                "Βρήκα διαθέσιμη ώρα στις "
-                + time
-            );
+    customerSpeak(
+        "Βρήκα διαθέσιμη ώρα στις "
+        + wanted.innerText.trim()
+    );
 
-        } else {
+} else {
 
-            let availableTimes = slots
-    .map(s => s.innerText.trim())
-    .slice(0, 3)
-    .join(", ");
+    let availableTimes = slots
+        .map(s => s.innerText.trim())
+        .slice(0, 3)
+        .join(", ");
 
-customerSpeak(
-    "Η ώρα " + time +
-    " δεν είναι διαθέσιμη. Διαθέσιμες ώρες είναι " +
-    availableTimes
-);
+    customerSpeak(
+        "Δεν υπάρχει διαθέσιμη ώρα. Οι επόμενες διαθέσιμες είναι " +
+        availableTimes
+    );
 
-        }
+}
 
     },500);
 }
