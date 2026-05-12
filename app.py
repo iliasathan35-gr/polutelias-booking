@@ -903,18 +903,26 @@ def admin_customers():
         """, (phone,))
 
         dates = []
-
-for x in cur.fetchall():
-
-    try:
-        dates.append(
-            datetime.strptime(
-                x[0],
-                "%Y-%m-%d %H:%M"
-            )
-        )
-    except:
-        pass
+        
+        for x in cur.fetchall():
+            
+            try:
+                
+                dates.append(
+                    
+                    datetime.strptime(
+                        
+                        x[0],
+                        
+                        "%Y-%m-%d %H:%M"
+                    
+                    )
+                
+                )
+                
+            except:
+                
+                pass
 
         avg_days = "-"
 
