@@ -305,7 +305,12 @@ select:focus{
             <div class="section">
                 <div class="section-title">👤 Στοιχεία</div>
 
-                <input name="name" placeholder="Ονοματεπώνυμο" required>
+                <input
+    name="name"
+    placeholder="Ονοματεπώνυμο"
+    value="{{ customer_name or '' }}"
+    required
+>
             </div>
 
             <div class="section">
