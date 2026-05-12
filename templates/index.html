@@ -481,11 +481,33 @@ document.getElementById("date").addEventListener("input", function () {
 
 window.onload = function(){
 
-    let date = document.getElementById("date").value;
+    const savedName =
+        localStorage.getItem("customerName");
+
+    const savedPhone =
+        localStorage.getItem("customerPhone");
+
+    if(savedName){
+
+        document.querySelector(
+            "input[name='name']"
+        ).value = savedName;
+    }
+
+    if(savedPhone){
+
+        document.querySelector(
+            "input[name='phone']"
+        ).value = savedPhone;
+    }
+
+    let date =
+        document.getElementById("date").value;
 
     if(date){
         loadSlots(date);
     }
+
 }
 
 
