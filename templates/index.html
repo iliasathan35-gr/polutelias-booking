@@ -929,6 +929,13 @@ async function applyVoiceBooking(text){
             );
 
             waitingVoiceConfirmation = true;
+
+            setTimeout(() => {
+
+                recognition.start();
+            
+            }, 3500);
+            
             return;
         }
 
