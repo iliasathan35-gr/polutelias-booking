@@ -433,15 +433,23 @@ def admin_edit(index):
 # ---------------- DELETE ----------------
 @app.route("/admin/delete/<int:index>")
 def admin_delete(index):
+
     if not session.get("admin"):
         return redirect("/login")
 
-    data = load()
+    conn = get_db()
+    cur = conn.cursor()
 
-    if 0 <= index < len(data):
-        data.pop(index)
+    cur.execute("""
+        DELETE FROM appointments
+        WHERE id=%s
+    """, (index,))
 
-    save(data)
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
     return redirect("/admin")
 
 
