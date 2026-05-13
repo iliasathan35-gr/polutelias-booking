@@ -1056,6 +1056,78 @@ function startCustomerVoice(){
 
         document.getElementById("customerVoiceText").value = text;
 
+        if(waitingWaitlistConfirmation){
+
+    if(
+        text.includes("ναι")
+        || text.includes("βάλε")
+        || text.includes("οκ")
+    ){
+
+        fetch("/waitlist/add", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                name:
+                    document.querySelector(
+                        "input[name='name']"
+                    ).value,
+
+                phone:
+                    document.querySelector(
+                        "input[name='phone']"
+                    ).value,
+
+                service:
+                    document.querySelector(
+                        "select[name='service']"
+                    ).value,
+
+                date:
+                    pendingWaitlist.date,
+
+                time:
+                    pendingWaitlist.time
+
+            })
+
+        });
+
+        customerSpeak(
+            "Μπήκες στη waitlist"
+        );
+
+        waitingWaitlistConfirmation = false;
+
+        pendingWaitlist = null;
+
+        return;
+    }
+
+    if(
+        text.includes("όχι")
+        || text.includes("άκυρο")
+    ){
+
+        customerSpeak(
+            "Οκ"
+        );
+
+        waitingWaitlistConfirmation = false;
+
+        pendingWaitlist = null;
+
+        return;
+    }
+
+}
+        
         if(waitingVoiceConfirmation){
             if(
                 text.includes("ναι") ||
