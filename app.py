@@ -1146,14 +1146,17 @@ def waitlist_add():
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT COUNT(*)
-        FROM appointments
+        SELECT priority
+        FROM customers
         WHERE phone=%s
     """, (phone,))
 
-    visits = cur.fetchone()[0]
+    row = cur.fetchone()
 
-    priority = visits >= 5
+    priority = False
+
+    if row:
+        priority = row[0]
 
     cur.execute("""
         INSERT INTO waitlist
