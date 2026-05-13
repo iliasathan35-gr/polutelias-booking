@@ -1373,7 +1373,7 @@ def admin_delay(minutes):
 
     if next_customer:
 
-        send_push_to_customer(
+        send_push_to_phone(
             next_customer[1],
             "⏳ Καθυστέρηση",
             f"Υπάρχει περίπου {minutes} λεπτά καθυστέρηση στο ραντεβού σου."
