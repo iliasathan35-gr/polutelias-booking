@@ -89,6 +89,41 @@ button{
 
 <div class="info">
 📞 {{ phone }}
+    {% if priority %}
+
+<div style="
+margin-top:10px;
+display:inline-block;
+background:#ffca28;
+color:black;
+padding:8px 14px;
+border-radius:14px;
+font-weight:bold;
+">
+
+⭐ VIP CUSTOMER
+
+</div>
+
+{% endif %}
+
+
+{% if banned %}
+
+<div style="
+margin-top:10px;
+display:inline-block;
+background:#c62828;
+padding:8px 14px;
+border-radius:14px;
+font-weight:bold;
+">
+
+🚫 BANNED
+
+</div>
+
+{% endif %}
     <form method="POST"
       action="/admin/toggle-priority"
       style="margin-top:14px;">
