@@ -8,6 +8,7 @@ from pywebpush import webpush
 import psycopg2
 import os
 from zoneinfo import ZoneInfo
+from threading import Timer
 
 GREECE_TZ = ZoneInfo("Europe/Athens")
 
@@ -481,6 +482,19 @@ def admin_delete(index):
     cur = conn.cursor()
 
     cur.execute("""
+        SELECT time
+        FROM appointments
+        WHERE id=%s
+    """, (index,))
+
+    row = cur.fetchone()
+
+    if row:
+        booking_time = row[0]
+    else:
+        booking_time = None
+
+    cur.execute("""
         DELETE FROM appointments
         WHERE id=%s
     """, (index,))
@@ -489,6 +503,29 @@ def admin_delete(index):
 
     cur.close()
     conn.close()
+
+    if booking_time:
+        date, time = booking_time.split(" ")
+
+        # Κρύβουμε προσωρινά την ώρα
+        temp_block_slot(date, time)
+
+        # VIP αμέσως
+        notify_waitlist_group(date, time, True)
+
+        # Υπόλοιποι μετά από 10 λεπτά
+        Timer(
+            600,
+            notify_waitlist_group,
+            args=[date, time, False]
+        ).start()
+
+        # Μετά από άλλα 5 λεπτά γίνεται διαθέσιμη
+        Timer(
+            900,
+            release_waitlist_slot,
+            args=[date, time]
+        ).start()
 
     return redirect("/admin")
 
@@ -1364,6 +1401,82 @@ def admin_reset_delay():
     conn.close()
 
     return "OK"
+
+def temp_block_slot(date, time):
+    blocked = load_blocked()
+
+    exists = any(
+        b["date"] == date and b["time"] == time
+        for b in blocked["slots"]
+    )
+
+    if not exists:
+        blocked["slots"].append({
+            "date": date,
+            "time": time
+        })
+
+    save_blocked(blocked)
+
+
+def release_waitlist_slot(date, time):
+    blocked = load_blocked()
+
+    blocked["slots"] = [
+        b for b in blocked["slots"]
+        if not (
+            b["date"] == date and b["time"] == time
+        )
+    ]
+
+    save_blocked(blocked)
+
+
+def notify_waitlist_group(date, time, priority):
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT name, phone, service
+        FROM waitlist
+        WHERE date=%s
+        AND time=%s
+        AND priority=%s
+        AND notified=FALSE
+    """, (
+        date,
+        time,
+        priority
+    ))
+
+    rows = cur.fetchall()
+
+    for r in rows:
+        name = r[0]
+        phone = r[1]
+        service = r[2]
+
+        send_push_to_phone(
+            phone,
+            "💈 Άνοιξε διαθέσιμη ώρα",
+            f"Άνοιξε slot στις {time} για {service}. Πρόλαβέ το!"
+        )
+
+        cur.execute("""
+            UPDATE waitlist
+            SET notified=TRUE
+            WHERE phone=%s
+            AND date=%s
+            AND time=%s
+        """, (
+            phone,
+            date,
+            time
+        ))
+
+    conn.commit()
+    cur.close()
+    conn.close()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
