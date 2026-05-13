@@ -444,6 +444,12 @@ def admin_add():
 
     save(data)
 
+    send_push_to_phone(
+        phone,
+        "Polutelias 💈",
+        f"Το ραντεβού σου κλείστηκε για {date} στις {time}"
+    )
+    
     send_telegram(f"💈 ADMIN ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{full_time}")
 
     return redirect("/admin")
