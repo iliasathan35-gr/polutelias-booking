@@ -229,7 +229,7 @@ def index():
         except:
             return "❌ Λάθος ημερομηνία/ώρα"
 
-        now = datetime.now()
+        now = now_greece()
 
         if dt.weekday() == 6:
             return "❌ Κυριακή κλειστά"
@@ -281,7 +281,7 @@ def index():
 
         return redirect("/success")
 
-    today_dt = datetime.now()
+    today_dt = now_greece()
     today = today_dt.strftime("%Y-%m-%d")
     max_date = (today_dt + timedelta(days=7)).strftime("%Y-%m-%d")
 
@@ -296,7 +296,7 @@ def index():
 
     # ---------------- GET ----------------
 
-    today_dt = datetime.now()
+    today_dt = now_greece()
 
     slots = generate_slots(today_dt.weekday())
 
@@ -344,7 +344,7 @@ def admin():
 
     data = load()
     blocked = load_blocked()
-    today = datetime.now()
+    today_dt = now_greece()
 
     days = []
 
@@ -564,7 +564,7 @@ def check_reminders():
 
     data = load()
 
-    now = datetime.now()
+    now = now_greece()
 
     changed = False
 
@@ -608,7 +608,7 @@ def send_push_to_phone(phone, title, body):
 
 def check_reminders():
     data = load()
-    now = datetime.now()
+    now = now_greece()
     changed = False
 
     for d in data:
@@ -1012,7 +1012,7 @@ def admin_stats():
     total_appointments = cur.fetchone()[0]
 
     # σήμερα
-    today = datetime.now().strftime("%Y-%m-%d")
+    today_dt = now_greece().strftime("%Y-%m-%d")
 
     cur.execute("""
         SELECT COUNT(*)
@@ -1323,7 +1323,7 @@ def admin_delay(minutes):
     conn.commit()
 
     # επόμενος πελάτης
-    now = datetime.now()
+    now = now_greece()
 
     cur.execute("""
         SELECT name, phone, time
