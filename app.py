@@ -1110,7 +1110,7 @@ def admin_customer_profile(phone):
     row = cur.fetchone()
 
     priority = False
-banned = False
+    banned = False
 
     if row:
         priority = row[0]
