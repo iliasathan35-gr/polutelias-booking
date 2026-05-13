@@ -1101,6 +1101,21 @@ def admin_customer_profile(phone):
         if row:
             customer_name = row[0]
 
+    cur.execute("""
+        SELECT priority, banned
+        FROM customers
+        WHERE phone=%s
+    """, (phone,))
+
+    row = cur.fetchone()
+
+    priority = False
+banned = False
+
+    if row:
+        priority = row[0]
+        banned = row[1]
+    
     cur.close()
     conn.close()
 
