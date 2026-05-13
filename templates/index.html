@@ -490,25 +490,55 @@ async function loadSlots(date){
             return;
         }
 
-        data.forEach(time => {
+        data.forEach(slot => {
 
-            let div = document.createElement("div");
+    let div = document.createElement("div");
 
-            div.className = "slot fade-in";
+    div.className = "slot fade-in";
 
-            div.innerText = time;
+    div.innerText = slot.time;
 
-            if(time === selectedTime){
-                div.classList.add("selected");
-            }
+    // 🔴 booked
+    if(slot.status === "booked"){
 
-            div.onclick = function(){
-                selectTime(time, div);
+        div.style.background = "#c62828";
+
+        div.style.opacity = "0.9";
+
+        div.onclick = function(){
+
+            customerSpeak(
+                "Η ώρα " +
+                speakTime(slot.time) +
+                " είναι κατειλημμένη. Θέλεις να μπεις σε waitlist;"
+            );
+
+            waitingWaitlistConfirmation = true;
+
+            pendingWaitlist = {
+                date: date,
+                time: slot.time
             };
+        };
 
-            container.appendChild(div);
+    }
 
-        });
+    // 🟢 free
+    else {
+
+        if(slot.time === selectedTime){
+            div.classList.add("selected");
+        }
+
+        div.onclick = function(){
+            selectTime(slot.time, div);
+        };
+
+    }
+
+    container.appendChild(div);
+
+});
 
     });
 }
