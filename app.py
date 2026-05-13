@@ -347,6 +347,8 @@ def admin():
     blocked = load_blocked()
     today_dt = now_greece()
 
+    today = now_greece()
+    
     days = []
 
     greek_days = {
