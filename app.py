@@ -9,6 +9,11 @@ import psycopg2
 import os
 from zoneinfo import ZoneInfo
 
+GREECE_TZ = ZoneInfo("Europe/Athens")
+
+def now_greece():
+    return datetime.now(GREECE_TZ).replace(tzinfo=None)
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_db():
