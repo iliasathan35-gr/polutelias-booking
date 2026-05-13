@@ -1179,6 +1179,46 @@ def waitlist_add():
     return jsonify({
         "success": True
     })
+
+# ---------------- TOGGLE PRIORITY ----------------
+@app.route("/admin/toggle-priority", methods=["POST"])
+def toggle_priority():
+
+    if not session.get("admin"):
+        return redirect("/login")
+
+    phone = request.form.get("phone")
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT priority
+        FROM customers
+        WHERE phone=%s
+    """, (phone,))
+
+    row = cur.fetchone()
+
+    if row:
+
+        new_value = not row[0]
+
+        cur.execute("""
+            UPDATE customers
+            SET priority=%s
+            WHERE phone=%s
+        """, (
+            new_value,
+            phone
+        ))
+
+        conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return redirect(f"/admin/customer/{phone}")
     
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
