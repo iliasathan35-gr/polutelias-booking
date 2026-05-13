@@ -89,6 +89,21 @@ button{
 
 <div class="info">
 📞 {{ phone }}
+    <form method="POST"
+      action="/admin/toggle-priority"
+      style="margin-top:14px;">
+
+<input type="hidden"
+       name="phone"
+       value="{{ phone }}">
+
+<button type="submit">
+
+⭐ Toggle Priority
+
+</button>
+
+</form>
 </div>
 
 <div class="info">
