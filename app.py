@@ -191,6 +191,26 @@ def index():
     if request.method == "POST":
         name = request.form.get("name")
         phone = request.form.get("phone")
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+             SELECT banned
+            FROM customers
+            WHERE phone=%s
+        """, (phone,))
+
+        row = cur.fetchone()
+
+        if row and row[0]:
+
+            cur.close()
+            conn.close()
+
+            return "🚫 Δεν μπορείς να κλείσεις ραντεβού"
+
+        cur.close()
+        conn.close()
         service = request.form.get("service")
         date = request.form.get("date")
         time = request.form.get("time")
