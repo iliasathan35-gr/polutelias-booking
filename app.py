@@ -560,31 +560,6 @@ def send_push_to_phone(phone, title, body):
                 print("Push error:", e)
 
 
-def check_reminders():
-
-    data = load()
-
-    now = now_greece()
-
-    changed = False
-
-    for d in data:
-
-        if d.get("reminder_sent"):
-            continue
-
-        try:
-
-            appointment_time = datetime.strptime(
-                d["time"],
-                "%Y-%m-%d %H:%M"
-            )
-
-        except:
-            continue
-
-        time_left = appointment_time - now
-
 def send_push_to_phone(phone, title, body):
     subs = load_push_subscriptions()
 
