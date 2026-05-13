@@ -1192,6 +1192,43 @@ window.addEventListener("load", async () => {
 </script>
 
 {% endif %}
+
+    {% if request.args.get("enable_notifications") %}
+
+<div id="notifBox" style="
+position:fixed;
+left:20px;
+right:20px;
+bottom:120px;
+background:#171717;
+padding:20px;
+border-radius:24px;
+z-index:9999;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+">
+
+<h3 style="margin-bottom:10px;">
+🔔 Ενεργοποίηση ειδοποιήσεων
+</h3>
+
+<p style="color:#aaa;margin-bottom:14px;">
+Πάτησε ενεργοποίηση μία φορά για να λαμβάνεις υπενθυμίσεις και ενημερώσεις.
+</p>
+
+<button
+type="button"
+onclick="
+enableNotifications();
+document.getElementById('notifBox').remove();
+"
+class="book-btn"
+>
+Ενεργοποίηση ειδοποιήσεων
+</button>
+
+</div>
+
+{% endif %}
     
 </body>
 </html>
