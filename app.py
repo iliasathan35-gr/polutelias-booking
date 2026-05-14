@@ -39,7 +39,7 @@ def load():
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT id, phone, service, time
+        SELECT id, name, phone, service, time
         FROM appointments
     """)
 
