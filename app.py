@@ -196,8 +196,8 @@ def index():
     data = load()
 
     if request.method == "POST":
-        name = request.form.get("name")
-        phone = request.form.get("phone")
+        name = session.get("customer_name") or request.form.get("name")
+        phone = session.get("customer_phone") or request.form.get("phone")
         conn = get_db()
         cur = conn.cursor()
 
