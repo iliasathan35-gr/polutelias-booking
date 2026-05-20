@@ -365,6 +365,10 @@ Reset
 
                     <form method="POST" action="/admin/add">
 
+                        <div style="color:red;">
+                            ADMIN ADD FORM
+                        </div>
+
                         <input type="hidden" name="date" value="{{ day.real_date }}">
                         <input type="hidden" name="time" value="{{ s.time }}">
 
@@ -377,8 +381,10 @@ Reset
                             <option>Κούρεμα + Μούσι</option>
                         </select>
 
-                        <button class="btn add-btn" type="submit">
-                            ➕ Κράτηση
+                        <button class="btn add-btn"
+                            type="submit"
+                            onclick="alert('SUBMITTING ADMIN ADD')">
+                                ➕ Κράτηση
 </button>
 
 </form>
