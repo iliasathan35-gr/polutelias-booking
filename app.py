@@ -588,7 +588,10 @@ def subscribe():
     return {"success": True}
 
 def send_push_to_phone(phone, title, body):
-    print("SEND PUSH TO:", phone)
+
+    print("SEND PUSH FUNCTION STARTED", flush=True)
+
+    print("SEND PUSH TO:", phone, flush=True)
     
     subs = load_push_subscriptions()
 
