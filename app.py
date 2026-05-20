@@ -610,9 +610,11 @@ def send_push_to_phone(phone, title, body):
                         "sub": os.environ.get("VAPID_EMAIL")
                     }
                 )
+             
+                print("PUSH SENT", flush=True)
+
             except Exception as e:
-                
-                print("PUSH ERROR:", str(e))
+                print("PUSH ERROR:", str(e), flush=True)
 
 
 def send_push_to_phone(phone, title, body):
