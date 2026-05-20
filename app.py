@@ -590,7 +590,11 @@ def send_push_to_phone(phone, title, body):
 
     for item in subs:
         if item.get("phone") == phone:
+            
+            print("FOUND SUB:", item)
+            
             try:
+                
                 webpush(
                     subscription_info=item["subscription"],
                     data=json.dumps({
@@ -603,7 +607,8 @@ def send_push_to_phone(phone, title, body):
                     }
                 )
             except Exception as e:
-                print("Push error:", e)
+                
+                print("PUSH ERROR:", str(e))
 
 
 def send_push_to_phone(phone, title, body):
