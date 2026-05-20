@@ -416,6 +416,8 @@ def admin():
 def admin_add():
     if not session.get("admin"):
         return redirect("/login")
+        
+    print("ADMIN ADD ROUTE HIT", flush=True)
 
     data = load()
 
