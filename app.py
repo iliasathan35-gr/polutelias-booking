@@ -592,16 +592,17 @@ def send_push_to_phone(phone, title, body):
     print("SEND PUSH FUNCTION STARTED", flush=True)
 
     print("SEND PUSH TO:", phone, flush=True)
-    
+
     subs = load_push_subscriptions()
 
     for item in subs:
+
         if item.get("phone") == phone:
-            
-            print("FOUND SUB:", item)
-            
+
+            print("FOUND SUB:", item, flush=True)
+
             try:
-                
+
                 webpush(
                     subscription_info=item["subscription"],
                     data=json.dumps({
@@ -613,32 +614,12 @@ def send_push_to_phone(phone, title, body):
                         "sub": os.environ.get("VAPID_EMAIL")
                     }
                 )
-             
+
                 print("PUSH SENT", flush=True)
 
             except Exception as e:
+
                 print("PUSH ERROR:", str(e), flush=True)
-
-
-def send_push_to_phone(phone, title, body):
-    subs = load_push_subscriptions()
-
-    for item in subs:
-        if item.get("phone") == phone:
-            try:
-                webpush(
-                    subscription_info=item["subscription"],
-                    data=json.dumps({
-                        "title": title,
-                        "body": body
-                    }),
-                    vapid_private_key=os.environ.get("VAPID_PRIVATE_KEY"),
-                    vapid_claims={
-                        "sub": os.environ.get("VAPID_EMAIL")
-                    }
-                )
-            except Exception as e:
-                print("Push error:", e)
 
 
 def check_reminders():
