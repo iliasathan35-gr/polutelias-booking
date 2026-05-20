@@ -444,6 +444,8 @@ def admin_add():
 
     save(data)
 
+    print("TRYING TO SEND BOOKING PUSH")
+    
     send_push_to_phone(
         phone,
         "Polutelias 💈",
