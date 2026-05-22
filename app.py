@@ -414,9 +414,10 @@ def admin():
 # ---------------- ADD (ADMIN) ----------------
 @app.route("/admin/add", methods=["POST"])
 def admin_add():
+
     if not session.get("admin"):
         return redirect("/login")
-        
+
     print("ADMIN ADD ROUTE HIT", flush=True)
 
     data = load()
@@ -442,7 +443,7 @@ def admin_add():
     cur.execute("""
         INSERT INTO appointments
         (name, phone, service, time)
-       VALUES (%s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s)
     """, (
         name,
         phone,
@@ -455,18 +456,19 @@ def admin_add():
     cur.close()
     conn.close()
 
-    print("TRYING TO SEND BOOKING PUSH")
-    
+    print("TRYING TO SEND BOOKING PUSH", flush=True)
+
     send_push_to_phone(
         phone,
         "Polutelias 💈",
         f"Το ραντεβού σου κλείστηκε για {date} στις {time}"
     )
-    
-    send_telegram(f"💈 ADMIN ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{full_time}")
+
+    send_telegram(
+        f"💈 ADMIN ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{full_time}"
+    )
 
     return redirect("/admin")
-
 
 # ---------------- EDIT ----------------
 @app.route("/admin/edit/<int:index>", methods=["POST"])
