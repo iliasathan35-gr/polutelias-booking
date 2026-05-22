@@ -597,23 +597,24 @@ def subscribe():
     save_push_subscriptions(subs)
 
     return {"success": True}
- def send_push_to_phone(phone, title, body):
+def send_push_to_phone(phone, title, body):
      
-     phone = phone.replace(" ", "").strip()
+    phone = phone.replace(" ", "").strip()
 
-     print("SEND PUSH FUNCTION STARTED", flush=True)
-     print("SEND PUSH TO:", phone, flush=True)
+    print("SEND PUSH FUNCTION STARTED", flush=True)
+    print("SEND PUSH TO:", phone, flush=True)
 
-     subs = load_push_subscriptions()
+    subs = load_push_subscriptions()
 
-     for item in subs:
+    for item in subs:
 
-         saved_phone = item.get("phone", "").replace(" ", "").strip()
+        saved_phone = item.get("phone", "").replace(" ", "").strip()
 
-         if saved_phone == phone:
+        if saved_phone == phone:
 
-             print("FOUND SUB:", item, flush=True)
+            print("FOUND SUB:", item, flush=True)
 
+           
             try:
 
                 webpush(
