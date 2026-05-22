@@ -452,8 +452,8 @@ def admin_add():
 
     conn.commit()
 
-cur.close()
-conn.close()
+    cur.close()
+    conn.close()
 
     print("TRYING TO SEND BOOKING PUSH")
     
