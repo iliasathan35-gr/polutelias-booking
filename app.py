@@ -436,15 +436,24 @@ def admin_add():
         if d["time"] == full_time:
             return "❌ Ώρα κατειλημμένη"
 
-    data.append({
-        "name": name,
-        "phone": phone,
-        "service": service,
-        "time": full_time,
-        "token": str(uuid.uuid4())
-    })
+    conn = get_db()
+    cur = conn.cursor()
 
-    save(data)
+    cur.execute("""
+        INSERT INTO appointments
+        (name, phone, service, time)
+       VALUES (%s, %s, %s, %s)
+    """, (
+        name,
+        phone,
+        service,
+        full_time
+    ))
+
+    conn.commit()
+
+cur.close()
+conn.close()
 
     print("TRYING TO SEND BOOKING PUSH")
     
