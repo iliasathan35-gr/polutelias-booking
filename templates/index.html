@@ -661,7 +661,11 @@ async function enableNotifications() {
         applicationServerKey: urlBase64ToUint8Array(keyData.publicKey)
     });
 
-  const phone = document.querySelector("input[name='phone']").value;
+    const phoneInput =
+        document.querySelector("input[name='phone']");
+
+    const phone =
+        phoneInput ? phoneInput.value : "";
 
 if(!phone){
     alert("Γράψε πρώτα το τηλέφωνό σου.");
