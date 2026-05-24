@@ -264,6 +264,12 @@ def index():
         ))
 
         conn.commit()
+        send_push_to_phone(
+            phone,
+            "Polutelias 💈",
+            f"Το ραντεβού σου κλείστηκε για {date} στις {time}"
+        )
+        
         cur.close()
         conn.close()
 
