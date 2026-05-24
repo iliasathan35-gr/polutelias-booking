@@ -464,18 +464,23 @@ def admin_add():
 
     print("TRYING TO SEND BOOKING PUSH", flush=True)
 
-    send_push_to_phone(
-        phone,
-        "Polutelias 💈",
-        f"Το ραντεβού σου κλείστηκε για {date} στις {time}"
-    )
+    try:
+        send_push_to_phone(
+            phone,
+            "Polutelias 💈",
+            f"Το ραντεβού σου κλείστηκε για {date} στις {time}"
+        )
+    except Exception as e:
+        print("Customer push failed:", e, flush=True)
 
-    send_telegram(
-        f"💈 ADMIN ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{full_time}"
-    )
+    try:
+        send_telegram(
+            f"💈 ADMIN ΝΕΟ ΡΑΝΤΕΒΟΥ!\n{name}\n{phone}\n{service}\n{full_time}"
+        )
+    except Exception as e:
+        print("Telegram failed:", e, flush=True)
 
     return redirect("/admin")
-
 # ---------------- EDIT ----------------
 @app.route("/admin/edit/<int:index>", methods=["POST"])
 def admin_edit(index):
