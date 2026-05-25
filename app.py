@@ -668,6 +668,8 @@ def check_reminders():
 
         # 1 ώρα πριν
         if timedelta(minutes=59) <= time_left <= timedelta(hours=1, minutes=1):
+            
+            phone = d.get("phone")
 
             send_push_to_phone(
                 phone,
