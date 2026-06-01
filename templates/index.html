@@ -796,6 +796,7 @@ let waitingVoiceConfirmation = false;
 let waitingWaitlistConfirmation = false;
 
 let pendingWaitlist = null;
+let waitingWaitlistConfirmation = false;
 let recognition = null;
 
 function customerSpeak(text){
@@ -850,81 +851,33 @@ function getDateFromVoice(text){
     } else if(text.includes("μεθαύριο")){
         today.setDate(today.getDate() + 2);
     } else {
-        const greekMonths = {
-            "ιανουαρίου": 0,
-            "φεβρουαρίου": 1,
-            "μαρτίου": 2,
-            "απριλίου": 3,
-            "μαΐου": 4,
-            "μαιου": 4,
-            "ιουνίου": 5,
-            "ιουλίου": 6,
-            "αυγούστου": 7,
-            "αυγουστου": 7,
-            "σεπτεμβρίου": 8,
-            "οκτωβρίου": 9,
-            "νοεμβρίου": 10,
-            "δεκεμβρίου": 11
+        const days = {
+            "κυριακή": 0,
+            "κυριακη": 0,
+            "δευτέρα": 1,
+            "δευτερα": 1,
+            "τρίτη": 2,
+            "τριτη": 2,
+            "τετάρτη": 3,
+            "τεταρτη": 3,
+            "πέμπτη": 4,
+            "πεμπτη": 4,
+            "παρασκευή": 5,
+            "παρασκευη": 5,
+            "σάββατο": 6,
+            "σαββατο": 6
         };
 
-        let foundMonth = false;
+        for(const word in days){
+            if(text.includes(word)){
+                let diff = (days[word] - today.getDay() + 7) % 7;
 
-        for(const monthName in greekMonths){
-            if(text.includes(monthName)){
-                const dayMatch = text.match(/(\d{1,2})/);
-
-                if(dayMatch){
-                    today.setFullYear(
-                        today.getFullYear(),
-                        greekMonths[monthName],
-                        parseInt(dayMatch[1])
-                    );
-
-                    foundMonth = true;
-                    break;
+                if(diff === 0){
+                    diff = 7;
                 }
-            }
-        }
 
-        if(!foundMonth){
-            const dateMatch = text.match(/(\d{1,2})[\/\-\.](\d{1,2})/);
-
-            if(dateMatch){
-                today.setFullYear(
-                    today.getFullYear(),
-                    parseInt(dateMatch[2]) - 1,
-                    parseInt(dateMatch[1])
-                );
-            } else {
-                const days = {
-                    "κυριακή": 0,
-                    "κυριακη": 0,
-                    "δευτέρα": 1,
-                    "δευτερα": 1,
-                    "τρίτη": 2,
-                    "τριτη": 2,
-                    "τετάρτη": 3,
-                    "τεταρτη": 3,
-                    "πέμπτη": 4,
-                    "πεμπτη": 4,
-                    "παρασκευή": 5,
-                    "παρασκευη": 5,
-                    "σάββατο": 6,
-                    "σαββατο": 6
-                };
-
-                for(const word in days){
-                    if(text.includes(word)){
-                        let diff = (days[word] - today.getDay() + 7) % 7;
-
-                        if(diff === 0){
-                            diff = 7;
-                        }
-
-                        today.setDate(today.getDate() + diff);
-                        break;
-                    }
-                }
+                today.setDate(today.getDate() + diff);
+                break;
             }
         }
     }
@@ -969,30 +922,6 @@ function getTimeFromVoice(text){
     return String(hour).padStart(2, "0") + ":" + minute;
 }
 
-function closestTimes(slots, wantedTime){
-    const wantedMinutes =
-        parseInt(wantedTime.split(":")[0]) * 60 +
-        parseInt(wantedTime.split(":")[1]);
-
-    return slots
-        .map(s => {
-            const t = s.innerText.trim();
-
-            const mins =
-                parseInt(t.split(":")[0]) * 60 +
-                parseInt(t.split(":")[1]);
-
-            return {
-                time: t,
-                diff: Math.abs(mins - wantedMinutes)
-            };
-        })
-        .sort((a, b) => a.diff - b.diff)
-        .slice(0, 3)
-        .map(x => speakTime(x.time))
-        .join(", ");
-}
-
 async function applyVoiceBooking(text){
     text = text.toLowerCase();
 
@@ -1013,7 +942,7 @@ async function applyVoiceBooking(text){
     setTimeout(() => {
         const slots = Array.from(document.querySelectorAll(".slot"));
 
-        if(text.includes("κυριακή")){
+        if(text.includes("κυριακή") || text.includes("κυριακη")){
             customerSpeak("Η Κυριακή είναι η μέρα του θεού.");
             return;
         }
@@ -1027,7 +956,7 @@ async function applyVoiceBooking(text){
             s => s.innerText.trim() === time
         );
 
-        if(wanted){
+        if(wanted && !wanted.classList.contains("booked")){
             selectTime(wanted.innerText.trim(), wanted);
 
             customerSpeak(
@@ -1039,23 +968,56 @@ async function applyVoiceBooking(text){
             waitingVoiceConfirmation = true;
 
             setTimeout(() => {
-
                 recognition.start();
-            
             }, 3500);
-            
+
             return;
         }
 
-        const closest = closestTimes(slots, time);
-
         customerSpeak(
             "Η ώρα " + speakTime(time) +
-            " δεν είναι διαθέσιμη. Οι κοντινότερες διαθέσιμες ώρες είναι " +
-            closest
+            " δεν είναι διαθέσιμη. Θέλεις να μπεις σε waitlist;"
         );
 
+        waitingWaitlistConfirmation = true;
+
+        pendingWaitlist = {
+            date: date,
+            time: time
+        };
+
+        setTimeout(() => {
+            recognition.start();
+        }, 3000);
+
     }, 900);
+}
+
+async function joinWaitlist(){
+
+    if(!pendingWaitlist){
+        return;
+    }
+
+    await fetch("/waitlist/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: document.querySelector("input[name='name']").value,
+            phone: document.querySelector("input[name='phone']").value,
+            service: document.querySelector("select[name='service']").value,
+            date: pendingWaitlist.date,
+            time: pendingWaitlist.time
+        })
+    });
+
+    document.getElementById("waitlistBox").style.display = "none";
+
+    alert("Μπήκες στη waitlist ✅");
+
+    pendingWaitlist = null;
 }
 
 function startCustomerVoice(){
@@ -1081,83 +1043,41 @@ function startCustomerVoice(){
 
         if(waitingWaitlistConfirmation){
 
-    if(
-        text.includes("ναι")
-        || text.includes("βάλε")
-        || text.includes("οκ")
-    ){
+            if(
+                text.includes("ναι") ||
+                text.includes("βάλε") ||
+                text.includes("οκ")
+            ){
+                joinWaitlist();
 
-        fetch("/waitlist/add", {
+                customerSpeak("Μπήκες στη waitlist.");
 
-            method: "POST",
+                waitingWaitlistConfirmation = false;
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+                return;
+            }
 
-            body: JSON.stringify({
+            if(
+                text.includes("όχι") ||
+                text.includes("άκυρο")
+            ){
+                customerSpeak("Οκ.");
 
-                name:
-                    document.querySelector(
-                        "input[name='name']"
-                    ).value,
+                waitingWaitlistConfirmation = false;
+                pendingWaitlist = null;
 
-                phone:
-                    document.querySelector(
-                        "input[name='phone']"
-                    ).value,
+                return;
+            }
+        }
 
-                service:
-                    document.querySelector(
-                        "select[name='service']"
-                    ).value,
-
-                date:
-                    pendingWaitlist.date,
-
-                time:
-                    pendingWaitlist.time
-
-            })
-
-        });
-
-        customerSpeak(
-            "Μπήκες στη waitlist"
-        );
-
-        waitingWaitlistConfirmation = false;
-
-        pendingWaitlist = null;
-
-        return;
-    }
-
-    if(
-        text.includes("όχι")
-        || text.includes("άκυρο")
-    ){
-
-        customerSpeak(
-            "Οκ"
-        );
-
-        waitingWaitlistConfirmation = false;
-
-        pendingWaitlist = null;
-
-        return;
-    }
-
-}
-        
         if(waitingVoiceConfirmation){
+
             if(
                 text.includes("ναι") ||
                 text.includes("κλείσε") ||
                 text.includes("προχώρα")
             ){
-                customerSpeak("Η κράτηση ολοκληρώθηκε μπρο.");
+                customerSpeak("Η κράτηση ολοκληρώθηκε.");
 
                 waitingVoiceConfirmation = false;
 
@@ -1188,84 +1108,25 @@ function startCustomerVoice(){
 
     recognition.start();
 }
-</script>
-
-    {% if request.args.get("enable_notifications") %}
-
-<script>
-
-window.addEventListener("load", async () => {
-
-    try{
-
-        if(Notification.permission !== "granted"){
-
-            await enableNotifications();
-
-        }
-
-    } catch(err){
-
-        console.log(err);
-
-    }
-
-});
 
 </script>
 
-{% endif %}
-
-    {% if request.args.get("enable_notifications") %}
-
-<div id="notifBox" style="
-position:fixed;
-left:20px;
-right:20px;
-bottom:120px;
+<div id="waitlistBox" style="
+display:none;
+margin-top:18px;
 background:#171717;
-padding:20px;
-border-radius:24px;
-z-index:9999;
-box-shadow:0 10px 30px rgba(0,0,0,0.4);
+padding:18px;
+border-radius:22px;
 ">
 
-<h3 style="margin-bottom:10px;">
-⏳ Waitlist
-</h3>
+    <div id="waitlistText" style="margin-bottom:14px;">
+    </div>
 
-<p id="waitlistText"
-style="color:#aaa;margin-bottom:14px;">
-</p>
-
-<button
-type="button"
-onclick="joinWaitlist()"
-class="book-btn"
->
-Μπες στη waitlist
-</button>
+    <button type="button" class="book-btn" onclick="joinWaitlist()">
+        Μπες στη waitlist
+    </button>
 
 </div>
-
-<script>
-
-let pendingWaitlist = null;
-
-async function joinWaitlist(){
-
-    if(!pendingWaitlist){
-        return;
-    }
-
-    alert("Μπήκες στη waitlist ✅");
-
-    document.getElementById("waitlistBox").style.display = "none";
-
-    pendingWaitlist = null;
-}
-
-</script>
     
 </body>
 </html>
