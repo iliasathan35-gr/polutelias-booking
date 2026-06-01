@@ -538,6 +538,7 @@ def admin_delete(index):
     conn.close()
 
     if booking_time:
+        print("DELETED SLOT:", booking_time, flush=True)
         date, time = booking_time.split(" ")
 
         # Κρύβουμε προσωρινά την ώρα
