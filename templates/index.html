@@ -1231,27 +1231,22 @@ box-shadow:0 10px 30px rgba(0,0,0,0.4);
 ">
 
 <h3 style="margin-bottom:10px;">
-🔔 Ενεργοποίηση ειδοποιήσεων
+⏳ Waitlist
 </h3>
 
-<p style="color:#aaa;margin-bottom:14px;">
-Πάτησε ενεργοποίηση μία φορά για να λαμβάνεις υπενθυμίσεις και ενημερώσεις.
+<p id="waitlistText"
+style="color:#aaa;margin-bottom:14px;">
 </p>
 
 <button
 type="button"
-onclick="
-enableNotifications();
-document.getElementById('notifBox').remove();
-"
+onclick="joinWaitlist()"
 class="book-btn"
 >
-Ενεργοποίηση ειδοποιήσεων
+Μπες στη waitlist
 </button>
 
 </div>
-
-{% endif %}
     
 </body>
 </html>
