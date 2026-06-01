@@ -507,17 +507,17 @@ async function loadSlots(date){
 
         div.onclick = function(){
 
-            customerSpeak(
-                "Η ώρα " + speakTime(time) +
-                " δεν είναι διαθέσιμη. Θέλεις να μπεις σε waitlist;"
-            );
-            
-            waitingWaitlistConfirmation = true;
-            
+            document.getElementById("waitlistBox").style.display = "block";
+
+            document.getElementById("waitlistText").innerText =
+                "Η ώρα " + slot.time +
+                " είναι κατειλημμένη. Θέλεις να μπεις σε waitlist;";
+
             pendingWaitlist = {
                 date: date,
-                time: time
+                time: slot.time
             };
+        };
             
             setTimeout(() => {
                 recognition.start();
