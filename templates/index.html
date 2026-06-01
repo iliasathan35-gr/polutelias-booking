@@ -478,7 +478,8 @@ async function loadSlots(date){
 
         let container = document.getElementById("slots");
 
-        let selectedTime = document.getElementById("timeInput").value;
+        let selectedTime =
+            document.getElementById("timeInput").value;
 
         container.innerHTML = "";
 
@@ -489,6 +490,52 @@ async function loadSlots(date){
 
             return;
         }
+
+        data.forEach(slot => {
+
+            let div = document.createElement("div");
+
+            div.className = "slot fade-in";
+
+            div.innerText = slot.time;
+
+            if(slot.status === "booked"){
+
+                div.style.background = "#c62828";
+                div.style.opacity = "0.9";
+
+                div.onclick = function(){
+
+                    document.getElementById("waitlistBox").style.display = "block";
+
+                    document.getElementById("waitlistText").innerText =
+                        "Η ώρα " + slot.time +
+                        " είναι κατειλημμένη. Θέλεις να μπεις σε waitlist;";
+
+                    pendingWaitlist = {
+                        date: date,
+                        time: slot.time
+                    };
+                };
+
+            } else {
+
+                if(slot.time === selectedTime){
+                    div.classList.add("selected");
+                }
+
+                div.onclick = function(){
+                    selectTime(slot.time, div);
+                };
+
+            }
+
+            container.appendChild(div);
+
+        });
+
+    });
+}
 
         data.forEach(slot => {
 
