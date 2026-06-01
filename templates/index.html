@@ -497,10 +497,12 @@ async function loadSlots(date){
 
             div.innerText = slot.time;
 
-            if(slot.status === "booked"){
+           if(slot.status === "booked"){
 
-                div.style.background = "#c62828";
-                div.style.opacity = "0.9";
+               div.classList.add("booked");
+
+               div.style.background = "#c62828";
+               div.style.opacity = "0.9";
 
                 div.onclick = function(){
 
