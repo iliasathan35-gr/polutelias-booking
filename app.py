@@ -1484,6 +1484,8 @@ def notify_waitlist_group(date, time, priority):
     ))
 
     rows = cur.fetchall()
+    
+    print("WAITLIST ROWS:", rows, flush=True)
 
     for r in rows:
         name = r[0]
