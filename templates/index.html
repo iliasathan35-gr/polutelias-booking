@@ -1247,6 +1247,25 @@ class="book-btn"
 </button>
 
 </div>
+
+<script>
+
+let pendingWaitlist = null;
+
+async function joinWaitlist(){
+
+    if(!pendingWaitlist){
+        return;
+    }
+
+    alert("Μπήκες στη waitlist ✅");
+
+    document.getElementById("waitlistBox").style.display = "none";
+
+    pendingWaitlist = null;
+}
+
+</script>
     
 </body>
 </html>
