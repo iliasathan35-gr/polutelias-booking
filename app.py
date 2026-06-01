@@ -1465,6 +1465,7 @@ def release_waitlist_slot(date, time):
 
 
 def notify_waitlist_group(date, time, priority):
+    print("NOTIFY WAITLIST:", date, time, priority, flush=True)
     conn = get_db()
     cur = conn.cursor()
 
