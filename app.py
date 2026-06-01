@@ -546,8 +546,6 @@ def admin_delete(index):
 
         # VIP αμέσως
         notify_waitlist_group(date, time, True)
-        
-        print("NOTIFY WAITLIST:", date, time, priority, flush=True)
 
         # Υπόλοιποι μετά από 10 λεπτά
         Timer(
