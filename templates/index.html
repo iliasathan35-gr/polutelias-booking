@@ -545,11 +545,9 @@ async function loadSlots(date){
 
     div.innerText = slot.time;
 
-    // 🔴 booked
     if(slot.status === "booked"){
 
         div.style.background = "#c62828";
-
         div.style.opacity = "0.9";
 
         div.onclick = function(){
@@ -565,22 +563,22 @@ async function loadSlots(date){
                 time: slot.time
             };
         };
-            
-            setTimeout(() => {
-                recognition.start();
-            }, 3000);
-            
-            return;
 
-            waitingWaitlistConfirmation = true;
+    } else {
 
-            pendingWaitlist = {
-                date: date,
-                time: slot.time
-            };
+        if(slot.time === selectedTime){
+            div.classList.add("selected");
+        }
+
+        div.onclick = function(){
+            selectTime(slot.time, div);
         };
 
     }
+
+    container.appendChild(div);
+
+});
 
     // 🟢 free
     else {
