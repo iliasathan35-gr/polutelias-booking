@@ -1525,6 +1525,31 @@ def notify_waitlist_group(date, time, priority):
     conn.commit()
     cur.close()
     conn.close()
+    
+@app.route("/admin/reset-stats")
+def reset_stats():
+
+    if not session.get("admin"):
+        return redirect("/login")
+
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM stats_settings
+    """)
+
+    cur.execute("""
+        INSERT INTO stats_settings(reset_date)
+        VALUES (CURRENT_DATE)
+    """)
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return redirect("/admin/stats") 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
