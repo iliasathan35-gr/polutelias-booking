@@ -1040,99 +1040,99 @@ def admin_customers():
 @app.route("/admin/stats")
 def admin_stats():
 
-if not session.get("admin"):
-    return redirect("/login")
+    if not session.get("admin"):
+        return redirect("/login")
 
-conn = get_db()
-cur = conn.cursor()
+    conn = get_db()
+    cur = conn.cursor()
 
-cur.execute("""
-    SELECT reset_date
-    FROM stats_settings
-    ORDER BY id DESC
-    LIMIT 1
-""")
+    cur.execute("""
+        SELECT reset_date
+        FROM stats_settings
+        ORDER BY id DESC
+        LIMIT 1
+    """)
 
-row = cur.fetchone()
+    row = cur.fetchone()
 
-if row:
-    reset_date = row[0]
-else:
-    reset_date = "2000-01-01"
+    if row:
+        reset_date = row[0]
+    else:
+        reset_date = "2000-01-01"
 
-today = now_greece().strftime("%Y-%m-%d")
-month = now_greece().strftime("%Y-%m")
+    today = now_greece().strftime("%Y-%m-%d")
+    month = now_greece().strftime("%Y-%m")
 
-# συνολικά από το τελευταίο reset
-cur.execute("""
-    SELECT COUNT(*)
-    FROM appointments
-    WHERE split_part(time,' ',1) >= %s
-""", (str(reset_date),))
+    # συνολικά από το τελευταίο reset
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM appointments
+        WHERE split_part(time,' ',1) >= %s
+    """, (str(reset_date),))
 
-total_appointments = cur.fetchone()[0]
+    total_appointments = cur.fetchone()[0]
 
-# ραντεβού μήνα
-cur.execute("""
-    SELECT COUNT(*)
-    FROM appointments
-    WHERE time LIKE %s
-    AND split_part(time,' ',1) >= %s
-""", (f"{month}%", str(reset_date)))
+    # ραντεβού μήνα
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM appointments
+        WHERE time LIKE %s
+        AND split_part(time,' ',1) >= %s
+    """, (f"{month}%", str(reset_date)))
 
-month_appointments = cur.fetchone()[0]
+    month_appointments = cur.fetchone()[0]
 
-# σημερινά
-cur.execute("""
-    SELECT COUNT(*)
-    FROM appointments
-    WHERE time LIKE %s
-    AND split_part(time,' ',1) >= %s
-""", (f"{today}%", str(reset_date)))
+    # σημερινά
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM appointments
+        WHERE time LIKE %s
+        AND split_part(time,' ',1) >= %s
+    """, (f"{today}%", str(reset_date)))
 
-today_appointments = cur.fetchone()[0]
+    today_appointments = cur.fetchone()[0]
 
-# δημοφιλέστερη υπηρεσία
-cur.execute("""
-    SELECT service, COUNT(*) as c
-    FROM appointments
-    WHERE split_part(time,' ',1) >= %s
-    GROUP BY service
-    ORDER BY c DESC
-    LIMIT 1
-""", (str(reset_date),))
+    # δημοφιλέστερη υπηρεσία
+    cur.execute("""
+        SELECT service, COUNT(*) as c
+        FROM appointments
+        WHERE split_part(time,' ',1) >= %s
+        GROUP BY service
+        ORDER BY c DESC
+        LIMIT 1
+    """, (str(reset_date),))
 
-fav = cur.fetchone()
+    fav = cur.fetchone()
 
-favorite_service = fav[0] if fav else "-"
+    favorite_service = fav[0] if fav else "-"
 
-# top πελάτης
-cur.execute("""
-    SELECT name, COUNT(*) as c
-    FROM appointments
-    WHERE split_part(time,' ',1) >= %s
-    GROUP BY name
-    ORDER BY c DESC
-    LIMIT 1
-""", (str(reset_date),))
+    # top πελάτης
+    cur.execute("""
+        SELECT name, COUNT(*) as c
+        FROM appointments
+        WHERE split_part(time,' ',1) >= %s
+        GROUP BY name
+        ORDER BY c DESC
+        LIMIT 1
+    """, (str(reset_date),))
 
-top = cur.fetchone()
+    top = cur.fetchone()
 
-top_customer = top[0] if top else "-"
-top_visits = top[1] if top else 0
+    top_customer = top[0] if top else "-"
+    top_visits = top[1] if top else 0
 
-cur.close()
-conn.close()
+    cur.close()
+    conn.close()
 
-return render_template(
-    "stats.html",
-    total_appointments=total_appointments,
-    month_appointments=month_appointments,
-    today_appointments=today_appointments,
-    favorite_service=favorite_service,
-    top_customer=top_customer,
-    top_visits=top_visits
-)
+    return render_template(
+        "stats.html",
+        total_appointments=total_appointments,
+        month_appointments=month_appointments,
+        today_appointments=today_appointments,
+        favorite_service=favorite_service,
+        top_customer=top_customer,
+        top_visits=top_visits
+    )
 
 
 # ---------------- CUSTOMER PROFILE ----------------
