@@ -1056,6 +1056,16 @@ def admin_stats():
 
     total_appointments = cur.fetchone()[0]
 
+    month = now_greece().strftime("%Y-%m")
+
+    cur.execute("""
+        SELECT COUNT(*)
+        FROM appointments
+        WHERE time LIKE %s
+    """, (f"{month}%",))
+
+month_appointments = cur.fetchone()[0]
+
     # σήμερα
     today_dt = now_greece().strftime("%Y-%m-%d")
 
