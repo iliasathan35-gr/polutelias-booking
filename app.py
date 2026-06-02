@@ -1040,7 +1040,6 @@ def admin_customers():
 @app.route("/admin/stats")
 def admin_stats():
 
-```
 if not session.get("admin"):
     return redirect("/login")
 
