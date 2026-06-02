@@ -1134,7 +1134,6 @@ return render_template(
     top_customer=top_customer,
     top_visits=top_visits
 )
-```
 
 
 # ---------------- CUSTOMER PROFILE ----------------
