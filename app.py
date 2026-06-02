@@ -1043,6 +1043,8 @@ def admin_stats():
     if not session.get("admin"):
         return redirect("/login")
 
+    today = now_greece().strftime("%Y-%m-%d")
+
     conn = get_db()
     cur = conn.cursor()
 
