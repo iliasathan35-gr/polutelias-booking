@@ -1110,6 +1110,7 @@ month_appointments = cur.fetchone()[0]
     return render_template(
         "stats.html",
         total_appointments=total_appointments,
+        month_appointments=month_appointments,
         today_appointments=today_appointments,
         favorite_service=favorite_service,
         top_customer=top_customer,
