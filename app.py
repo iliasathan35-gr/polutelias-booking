@@ -1064,7 +1064,7 @@ def admin_stats():
         WHERE time LIKE %s
     """, (f"{month}%",))
 
-month_appointments = cur.fetchone()[0]
+    month_appointments = cur.fetchone()[0]
 
     # σήμερα
     today_dt = now_greece().strftime("%Y-%m-%d")
