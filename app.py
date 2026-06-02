@@ -366,7 +366,7 @@ def admin():
         "Sunday": "Κυριακή"
     }
 
-    for i in range(10):
+    for i in range(5):
         day = today + timedelta(days=i)
         date_str = day.strftime("%Y-%m-%d")
 
