@@ -767,11 +767,35 @@ localStorage.setItem(
 </script>
 
 <script>
-    
 let pendingWaitlist = null;
 
-}
+async function joinWaitlist(){
 
+    if(!pendingWaitlist){
+        alert("Πρώτα πάτα μια κατειλημμένη ώρα.");
+        return;
+    }
+
+    await fetch("/waitlist/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: document.querySelector("input[name='name']").value,
+            phone: document.querySelector("input[name='phone']").value,
+            service: document.querySelector("select[name='service']").value,
+            date: pendingWaitlist.date,
+            time: pendingWaitlist.time
+        })
+    });
+
+    document.getElementById("waitlistBox").style.display = "none";
+
+    alert("Μπήκες στη waitlist ✅");
+
+    pendingWaitlist = null;
+}
 </script>
 
 <div id="waitlistBox" style="
