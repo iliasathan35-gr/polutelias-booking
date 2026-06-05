@@ -71,23 +71,44 @@ BLOCKED_FILE = "blocked.json"
 
 def load_blocked():
 
-    try:
+    conn = get_db()
+    cur = conn.cursor()
 
-        with open(BLOCKED_FILE, "r") as f:
-            return json.load(f)
+    cur.execute("""
+        SELECT date
+        FROM blocked_days
+    """)
 
-    except:
+    days = [row[0] for row in cur.fetchall()]
 
-        return {
-            "days": [],
-            "slots": []
-        }
+    cur.execute("""
+        SELECT date, time
+        FROM blocked_slots
+    """)
+
+    slots = []
+
+    for row in cur.fetchall():
+
+        slots.append({
+            "date": row[0],
+            "time": row[1]
+        })
+
+    cur.close()
+    conn.close()
+
+    return {
+        "days": days,
+        "slots": slots
+    }
 
 
 def save_blocked(data):
+    pass
 
-    with open(BLOCKED_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+
+
 
 # ---------------- TELEGRAM ----------------
 def send_telegram(text):
