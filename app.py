@@ -751,12 +751,19 @@ def block_day(date):
     if not session.get("admin"):
         return redirect("/login")
 
-    blocked = load_blocked()
+    conn = get_db()
+    cur = conn.cursor()
 
-    if date not in blocked["days"]:
-        blocked["days"].append(date)
+    cur.execute("""
+        INSERT INTO blocked_days(date)
+        VALUES (%s)
+        ON CONFLICT (date) DO NOTHING
+    """, (date,))
 
-    save_blocked(blocked)
+    conn.commit()
+
+    cur.close()
+    conn.close()
 
     return redirect("/admin")
 
@@ -766,14 +773,18 @@ def unblock_day(date):
     if not session.get("admin"):
         return redirect("/login")
 
-    blocked = load_blocked()
+    conn = get_db()
+    cur = conn.cursor()
 
-    blocked["days"] = [
-        d for d in blocked["days"]
-        if d != date
-    ]
+    cur.execute("""
+        DELETE FROM blocked_days
+        WHERE date=%s
+    """, (date,))
 
-    save_blocked(blocked)
+    conn.commit()
+
+    cur.close()
+    conn.close()
 
     return redirect("/admin")
 
@@ -783,17 +794,19 @@ def block_slot(date, time):
     if not session.get("admin"):
         return redirect("/login")
 
-    blocked = load_blocked()
+    conn = get_db()
+    cur = conn.cursor()
 
-    item = {
-        "date": date,
-        "time": time
-    }
+    cur.execute("""
+        INSERT INTO blocked_slots(date,time)
+        VALUES (%s,%s)
+        ON CONFLICT (date,time) DO NOTHING
+    """, (date, time))
 
-    if item not in blocked["slots"]:
-        blocked["slots"].append(item)
+    conn.commit()
 
-    save_blocked(blocked)
+    cur.close()
+    conn.close()
 
     return redirect("/admin")
 
@@ -803,14 +816,18 @@ def unblock_slot(date, time):
     if not session.get("admin"):
         return redirect("/login")
 
-    blocked = load_blocked()
+    conn = get_db()
+    cur = conn.cursor()
 
-    blocked["slots"] = [
-        b for b in blocked["slots"]
-        if not (b["date"] == date and b["time"] == time)
-    ]
+    cur.execute("""
+        DELETE FROM blocked_slots
+        WHERE date=%s AND time=%s
+    """, (date, time))
 
-    save_blocked(blocked)
+    conn.commit()
+
+    cur.close()
+    conn.close()
 
     return redirect("/admin")
 
