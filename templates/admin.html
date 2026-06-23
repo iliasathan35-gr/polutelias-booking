@@ -10,32 +10,7 @@
 <link rel="manifest" href="/static/admin-manifest.json">
 <meta name="theme-color" content="#00c853">
 
-<style>
-    
-.calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-top: 20px;
-}
-
-.day {
-    background: #171717;
-    padding: 12px;
-    border-radius: 14px;
-    text-align: center;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.day.blocked {
-    background: #c62828;
-}
-
-.day.today {
-    border: 2px solid #00e676;
-}
-    
+<style>  
     
 *{
     margin:0;
@@ -680,60 +655,6 @@ setInterval(() => {
 }, 15000);
 
 </script>
-
- <div class="calendar" id="calendar"></div>
-
-<script>
-function loadCalendar(){
-
-    let container = document.getElementById("calendar");
-
-    let today = new Date();
-    let year = today.getFullYear();
-    let month = today.getMonth();
-
-    let firstDay = new Date(year, month, 1);
-    let lastDay = new Date(year, month + 1, 0);
-
-    container.innerHTML = "";
-
-    for(let i = 1; i <= lastDay.getDate(); i++){
-
-        let date = new Date(year, month, i);
-
-        let dateStr =
-            date.toISOString().split("T")[0];
-
-        let div = document.createElement("div");
-        div.className = "day";
-
-        div.innerText = i;
-
-        // σήμερα
-        if(i === today.getDate()){
-            div.classList.add("today");
-        }
-
-        fetch("/blocked_check?date=" + dateStr)
-        .then(r => r.json())
-        .then(res => {
-
-            if(res.blocked){
-                div.classList.add("blocked");
-            }
-
-        });
-
-        div.onclick = function(){
-            window.location = "/admin?date=" + dateStr;
-        };
-
-        container.appendChild(div);
-    }
-}
-
-loadCalendar();
-</script>
-    
+ 
 </body>
 </html>
