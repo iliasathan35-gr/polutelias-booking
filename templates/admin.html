@@ -682,6 +682,58 @@ setInterval(() => {
 </script>
 
  <div class="calendar" id="calendar"></div>
+
+<script>
+function loadCalendar(){
+
+    let container = document.getElementById("calendar");
+
+    let today = new Date();
+    let year = today.getFullYear();
+    let month = today.getMonth();
+
+    let firstDay = new Date(year, month, 1);
+    let lastDay = new Date(year, month + 1, 0);
+
+    container.innerHTML = "";
+
+    for(let i = 1; i <= lastDay.getDate(); i++){
+
+        let date = new Date(year, month, i);
+
+        let dateStr =
+            date.toISOString().split("T")[0];
+
+        let div = document.createElement("div");
+        div.className = "day";
+
+        div.innerText = i;
+
+        // σήμερα
+        if(i === today.getDate()){
+            div.classList.add("today");
+        }
+
+        fetch("/blocked_check?date=" + dateStr)
+        .then(r => r.json())
+        .then(res => {
+
+            if(res.blocked){
+                div.classList.add("blocked");
+            }
+
+        });
+
+        div.onclick = function(){
+            window.location = "/admin?date=" + dateStr;
+        };
+
+        container.appendChild(div);
+    }
+}
+
+loadCalendar();
+</script>
     
 </body>
 </html>
