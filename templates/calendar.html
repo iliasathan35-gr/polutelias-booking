@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+    background:#0f0f0f;
+    color:white;
+    font-family:Arial;
+    padding:20px;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:10px;
+}
+
+.day{
+    background:#171717;
+    padding:12px;
+    border-radius:14px;
+    text-align:center;
+    cursor:pointer;
+    font-size:12px;
+}
+
+.blocked{
+    background:#ff1744;
+}
+
+.free{
+    background:#00e676;
+    color:black;
+}
+
+a{
+    color:#00e676;
+    text-decoration:none;
+    display:block;
+    margin-bottom:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<a href="/admin">← Admin</a>
+
+<h2>📅 Calendar</h2>
+
+<div class="grid">
+
+{% for d in days %}
+
+<a href="{% if d.blocked %}/admin/unblock-day/{{ d.date }}{% else %}/admin/block-day/{{ d.date }}{% endif %}">
+
+<div class="day {% if d.blocked %}blocked{% else %}free{% endif %}">
+    {{ d.date }}
+</div>
+
+</a>
+
+{% endfor %}
+
+</div>
+
+</body>
+</html>
