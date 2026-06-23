@@ -1607,39 +1607,5 @@ def reset_stats():
 
     return redirect("/admin/stats") 
 
-@app.route("/admin/calendar-data")
-def calendar_data():
-
-    if not session.get("admin"):
-        return jsonify([])
-
-    conn = get_db()
-    cur = conn.cursor()
-
-    today = now_greece().date()
-
-    days = []
-
-    for i in range(0, 30):
-
-        day = today + timedelta(days=i)
-
-        cur.execute("""
-            SELECT COUNT(*) FROM blocked_days
-            WHERE date=%s
-        """, (str(day),))
-
-        blocked = cur.fetchone()[0] > 0
-
-        days.append({
-            "date": str(day),
-            "blocked": blocked
-        })
-
-    cur.close()
-    conn.close()
-
-    return jsonify(days)
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
