@@ -1607,25 +1607,5 @@ def reset_stats():
 
     return redirect("/admin/stats") 
 
-@app.route("/blocked_check")
-def blocked_check():
-
-    date = request.args.get("date")
-
-    conn = get_db()
-    cur = conn.cursor()
-
-    cur.execute("""
-        SELECT 1 FROM blocked_days
-        WHERE date=%s
-    """, (date,))
-
-    blocked = cur.fetchone() is not None
-
-    cur.close()
-    conn.close()
-
-    return {"blocked": blocked}
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
