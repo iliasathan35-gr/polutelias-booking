@@ -124,7 +124,7 @@ def send_telegram(text):
 
 # ---------------- SLOTS ----------------
 @app.route("/slots")
-    def slots_api():
+def slots_api():
 
     date = request.args.get("date")
 
