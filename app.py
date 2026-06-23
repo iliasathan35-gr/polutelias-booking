@@ -124,6 +124,13 @@ def send_telegram(text):
 
 # ---------------- SLOTS ----------------
 @app.route("/slots")
+max_date = now_greece().date() + timedelta(days=15)
+
+req_date = datetime.strptime(date, "%Y-%m-%d").date()
+
+if req_date > max_date:
+    return jsonify([])
+    
 def slots_api():
 
     date = request.args.get("date")
